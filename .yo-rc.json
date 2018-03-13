@@ -1,0 +1,33 @@
+{
+  "generator-phovea": {
+    "type": "app",
+    "app": "Vega CLUE",
+    "clientOnly": false,
+    "entries": {
+      "app": "./src/index.ts"
+    },
+    "libraries": [
+      "d3"
+    ],
+    "modules": [
+      "phovea_core",
+      "phovea_ui",
+      "phovea_clue"
+    ],
+    "libraryAliases": {
+      "d3": "d3/d3"
+    },
+    "libraryExternals": [
+      "d3",
+      "jquery",
+      "font-awesome",
+      "marked"
+    ],
+    "ignores": [],
+    "extensions": [],
+    "name": "vega_clue",
+    "author": "Holger Stitz",
+    "today": "Tue, 13 Mar 2018 10:20:09 GMT",
+    "githubAccount": "thinkh"
+  }
+}
