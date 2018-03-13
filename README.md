@@ -1,7 +1,7 @@
-vega_clue [![Phovea][phovea-image]][phovea-url] [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
+Vega CLUE [![Phovea][phovea-image]][phovea-url] [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Build Status][circleci-image]][circleci-url]
 =====================
 
-Vega examples with CLUE
+[Vega examples](https://vega.github.io/vega/examples/) with [CLUE](https://github.com/phovea/phovea_clue)
 
 Installation
 ------------
@@ -44,7 +44,9 @@ This repository is part of **[Phovea](http://phovea.caleydo.org/)**, a platform 
 [phovea-url]: https://phovea.caleydo.org
 [npm-image]: https://badge.fury.io/js/vega_clue.svg
 [npm-url]: https://npmjs.org/package/vega_clue
-[travis-image]: https://travis-ci.org/thinkh/vega_clue.svg?branch=master
-[travis-url]: https://travis-ci.org/thinkh/vega_clue
-[daviddm-image]: https://david-dm.org/thinkh/vega_clue/status.svg
-[daviddm-url]: https://david-dm.org/thinkh/vega_clue
+[travis-image]: https://travis-ci.org/Caleydo/vega_clue.svg?branch=master
+[travis-url]: https://travis-ci.org/Caleydo/vega_clue
+[daviddm-image]: https://david-dm.org/Caleydo/vega_clue/status.svg
+[daviddm-url]: https://david-dm.org/Caleydo/vega_clue
+[circleci-image]: https://circleci.com/gh/Caleydo/vega_clue/tree/master.svg?style=svg
+[circleci-url]: https://circleci.com/gh/Caleydo/vega_clue/tree/master
