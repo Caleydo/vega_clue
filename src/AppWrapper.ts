@@ -54,7 +54,7 @@ export class AppWrapper<T extends IVisStateApp> extends ACLUEWrapper {
     //create the common header
     const headerOptions = {
       showCookieDisclaimer: this.options.showCookieDisclaimer,
-      showOptionsLink: true, // always activate options
+      showOptionsLink: false,
       appLink: new AppHeaderLink(APP_NAME, (event) => {
         event.preventDefault();
         return false;
