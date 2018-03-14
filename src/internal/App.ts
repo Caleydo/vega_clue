@@ -12,6 +12,7 @@ import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
 import {HELLO_WORLD} from '../language';
 import {IProperty, IPropertyValue} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
 import {IApp} from '../AppWrapper';
+import datasets from '../../data';
 
 export default class App extends EventHandler implements IApp<App>, IVisStateApp {
   /**
@@ -41,15 +42,20 @@ export default class App extends EventHandler implements IApp<App>, IVisStateApp
   init():Promise<App> {
     this.$node.html(`<div id="view">${HELLO_WORLD}</div>`);
 
-    return vega.loader()
+    // load from external URL
+    /*return vega.loader()
       .load('https://vega.github.io/vega/examples/bar-chart.vg.json')
       .then((data) => this.renderVega(JSON.parse(data)))
-      .then(() => this);
+      .then(() => this);*/
+
+    // render bundled dataset
+    this.renderVega(datasets[3]);
+    return Promise.resolve(this);
   }
 
   private renderVega(spec) {
     this.vegaView = new vega.View(vega.parse(spec))
-      .renderer('canvas')  // set renderer (canvas or svg)
+      .renderer('svg')  // set renderer (canvas or svg)
       .initialize('#view') // initialize view within parent DOM container
       .hover() // enable hover encode set processing
       .run();
