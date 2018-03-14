@@ -3,6 +3,7 @@
  */
 
 import * as d3 from 'd3';
+import * as vega from 'vega-lib';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
 import {cat, IObjectRef} from 'phovea_core/src/provenance';
 import {EventHandler} from 'phovea_core/src/event';
@@ -10,7 +11,7 @@ import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
 import {IProperty, IPropertyValue} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
 import {IView} from '../AppWrapper';
-import datasets from '../../data';
+import {default as vegaSpecs} from '../../data';
 import {VegaView} from './VegaView';
 
 export default class App extends EventHandler implements IView<App>, IVisStateApp {
@@ -21,6 +22,8 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
   readonly ref: IObjectRef<App>;
 
   private readonly $node: d3.Selection<App>;
+
+  private vegaView:VegaView;
 
   constructor(public readonly graph: ProvenanceGraph, public readonly graphManager: CLUEGraphManager, parent: HTMLElement) {
     super();
@@ -37,9 +40,26 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
    * @returns {Promise<App>}
    */
   init(): Promise<App> {
+    const that = this;
+
     this.$node.html(`
-      <div class="view-wrapper"></div>
+      <select><!-- select a vega specification --></select>
+      <div class="view-wrapper"></div> 
     `);
+
+    const select = this.$node.select('select')
+      .on('change', function() {
+        const vegaSpec = vegaSpecs.filter((ds) => ds.title === this.value);
+        if(vegaSpec.length > 0) {
+          that.openVegaView(vegaSpec[0])
+        }
+      });
+
+    const options = select
+      .selectAll('option')
+      .data(vegaSpecs);
+    options.enter().append('option').text((d) => d.title);
+    options.exit().remove();
 
     // load from external URL
     /*return vega.loader()
@@ -47,11 +67,32 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
       .then((data) => this.renderVega(JSON.parse(data)))
       .then(() => this);*/
 
-    // render bundled dataset
-    const view = new VegaView(<HTMLElement>this.$node.select('.view-wrapper').node(), this.graph, datasets[2]);
+    if(vegaSpecs.length > 0) {
+      return this.openVegaView(vegaSpecs[0])
+        .then(() => this);
+    }
 
-    return view.init()
-      .then(() => this);
+    this.$node.html('No available Vega Specs loaded');
+    return Promise.resolve(this);
+  }
+
+  private openVegaView(spec: vega.Spec): Promise<VegaView> {
+    const headerWaitingOverlay = document.getElementById('headerWaitingOverlay');
+    headerWaitingOverlay.classList.remove('hidden');
+
+    // remove old view first
+    if(this.vegaView) {
+      this.vegaView.remove();
+    }
+
+    // init new view with selected spec
+    this.vegaView = new VegaView(<HTMLElement>this.$node.select('.view-wrapper').node(), this.graph, spec);
+
+    return this.vegaView.init()
+      .then(() => {
+        headerWaitingOverlay.classList.add('hidden');
+        return this.vegaView;
+      });
   }
 
   getVisStateProps(): Promise<IProperty[]> {

@@ -35,6 +35,7 @@ export class VegaView implements IView<VegaView> {
   remove() {
     const vegaView = this.$node.datum();
     this.removeSignalListener(vegaView);
+    this.$node.remove();
   }
 
   private addSignalListener(vegaView) {

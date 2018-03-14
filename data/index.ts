@@ -3,7 +3,7 @@ import crossfilterFlights from './crossfilter-flights.vg.json';
 import interactiveLegend from './interactive-legend.vg.json';
 import overviewPlusDetail from './overview-plus-detail.vg.json';
 
-const datasets = [
+const vegaSpecs = [
   barChart,
   crossfilterFlights,
   interactiveLegend,
@@ -13,7 +13,7 @@ const datasets = [
 /**
  * Prefix dataset URLs to load it from extern
  */
-datasets.forEach((ds) => {
+vegaSpecs.forEach((ds) => {
   if(ds.data) {
     ds.data = ds.data.map((d) => {
       if(d.url) {
@@ -24,4 +24,4 @@ datasets.forEach((ds) => {
   }
 });
 
-export default datasets;
+export default vegaSpecs;
