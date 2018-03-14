@@ -1,4 +1,7 @@
 {
+  "title": "Bar Chart Example",
+  "url": "https://vega.github.io/vega/examples/bar-chart/",
+
   "$schema": "https://vega.github.io/schema/vega/v3.json",
   "width": 400,
   "height": 200,

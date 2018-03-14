@@ -1,6 +1,8 @@
 {
-  "$schema": "https://vega.github.io/schema/vega/v3.json",
+  "title": "Overview Plus Detail",
   "url": "https://vega.github.io/vega/examples/overview-plus-detail/",
+
+  "$schema": "https://vega.github.io/schema/vega/v3.json",
   "width": 720,
   "height": 480,
   "padding": 5,

@@ -1,6 +1,8 @@
 {
-  "$schema": "https://vega.github.io/schema/vega/v3.json",
+  "title": "Crossfilter Flights",
   "url": "https://vega.github.io/vega/examples/crossfilter-flights/",
+
+  "$schema": "https://vega.github.io/schema/vega/v3.json",
   "width": 500,
   "padding": 5,
 

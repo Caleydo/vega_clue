@@ -1,7 +1,9 @@
 {
-  "$schema": "https://vega.github.io/schema/vega/v3.json",
+  "title": "Interactive Legend Example",
   "description": "Scatter plot with interactive legend and x-axis.",
   "url": "https://vega.github.io/vega/examples/interactive-legend/",
+
+  "$schema": "https://vega.github.io/schema/vega/v3.json",
   "width": 200,
   "height": 200,
   "padding": 5,

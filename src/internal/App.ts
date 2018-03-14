@@ -3,18 +3,17 @@
  */
 
 import * as d3 from 'd3';
-import * as vega from 'vega-lib';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
 import {cat, IObjectRef} from 'phovea_core/src/provenance';
 import {EventHandler} from 'phovea_core/src/event';
 import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
-import {HELLO_WORLD} from '../language';
 import {IProperty, IPropertyValue} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
-import {IApp} from '../AppWrapper';
+import {IView} from '../AppWrapper';
 import datasets from '../../data';
+import {VegaView} from './VegaView';
 
-export default class App extends EventHandler implements IApp<App>, IVisStateApp {
+export default class App extends EventHandler implements IView<App>, IVisStateApp {
   /**
    * IObjectRef to this App instance
    * @type {IObjectRef<App>}
@@ -22,8 +21,6 @@ export default class App extends EventHandler implements IApp<App>, IVisStateApp
   readonly ref: IObjectRef<App>;
 
   private readonly $node: d3.Selection<App>;
-
-  private vegaView;
 
   constructor(public readonly graph: ProvenanceGraph, public readonly graphManager: CLUEGraphManager, parent: HTMLElement) {
     super();
@@ -39,8 +36,10 @@ export default class App extends EventHandler implements IApp<App>, IVisStateApp
    * Initialize the app
    * @returns {Promise<App>}
    */
-  init():Promise<App> {
-    this.$node.html(`<div id="view">${HELLO_WORLD}</div>`);
+  init(): Promise<App> {
+    this.$node.html(`
+      <div class="view-wrapper"></div>
+    `);
 
     // load from external URL
     /*return vega.loader()
@@ -49,23 +48,21 @@ export default class App extends EventHandler implements IApp<App>, IVisStateApp
       .then(() => this);*/
 
     // render bundled dataset
-    this.renderVega(datasets[3]);
-    return Promise.resolve(this);
+    const view = new VegaView(<HTMLElement>this.$node.select('.view-wrapper').node(), this.graph, datasets[2]);
+
+    return view.init()
+      .then(() => this);
   }
 
-  private renderVega(spec) {
-    this.vegaView = new vega.View(vega.parse(spec))
-      .renderer('svg')  // set renderer (canvas or svg)
-      .initialize('#view') // initialize view within parent DOM container
-      .hover() // enable hover encode set processing
-      .run();
-  }
-
-  getVisStateProps():Promise<IProperty[]> {
+  getVisStateProps(): Promise<IProperty[]> {
     return Promise.resolve([]);
   }
 
   getCurrVisState(): Promise<IPropertyValue[]> {
     return Promise.resolve([]);
+  }
+
+  remove() {
+    // do nothing
   }
 }
