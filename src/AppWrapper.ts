@@ -14,6 +14,10 @@ import {create as createProvRetrievalPanel} from 'phovea_clue/src/provenance_ret
 import {mixin} from 'phovea_core/src';
 
 
+export interface IApp<T> {
+  init():Promise<T>;
+}
+
 export interface IAppWrapperOptions {
   /**
    * name of this application
@@ -33,7 +37,7 @@ export interface IAppWrapperOptions {
 /**
  * The main class for the App app
  */
-export class AppWrapper<T extends IVisStateApp> extends ACLUEWrapper {
+export class AppWrapper<T extends IApp<T> & IVisStateApp> extends ACLUEWrapper {
 
   protected readonly options: IAppWrapperOptions = {
     name: 'App',
@@ -129,7 +133,9 @@ export class AppWrapper<T extends IVisStateApp> extends ACLUEWrapper {
   protected createApp(graph: ProvenanceGraph, manager: CLUEGraphManager, main: HTMLElement):PromiseLike<T> | T {
     // lazy loading for better module bundling
     return Promise.all([System.import('./internal/App')]).then((modules) => {
-      return new modules[0].default(graph, manager, main);
+      const app:T = new modules[0].default(graph, manager, main);
+      app.init();
+      return app;
     });
   }
 }

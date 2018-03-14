@@ -3,6 +3,7 @@
  */
 
 import * as d3 from 'd3';
+import * as vega from 'vega-lib';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
 import {cat, IObjectRef} from 'phovea_core/src/provenance';
 import {EventHandler} from 'phovea_core/src/event';
@@ -10,8 +11,9 @@ import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
 import {HELLO_WORLD} from '../language';
 import {IProperty, IPropertyValue} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
+import {IApp} from '../AppWrapper';
 
-export default class App extends EventHandler implements IVisStateApp {
+export default class App extends EventHandler implements IApp<App>, IVisStateApp {
   /**
    * IObjectRef to this App instance
    * @type {IObjectRef<App>}
@@ -20,22 +22,37 @@ export default class App extends EventHandler implements IVisStateApp {
 
   private readonly $node: d3.Selection<App>;
 
+  private vegaView;
+
   constructor(public readonly graph: ProvenanceGraph, public readonly graphManager: CLUEGraphManager, parent: HTMLElement) {
     super();
+
     // add OrdinoApp app as (first) object to provenance graph
     // need old name for compatibility
-    this.ref = graph.findOrAddObject(this, 'App', cat.visual);
+    this.ref = this.graph.findOrAddObject(this, 'App', cat.visual);
 
     this.$node = d3.select(parent).append('div').classed('app', true).datum(this);
-    this.$node.html(HELLO_WORLD);
   }
 
   /**
-   * Show or hide the application loading indicator
-   * @param isBusy
+   * Initialize the app
+   * @returns {Promise<App>}
    */
-  setBusy(isBusy: boolean) {
-    this.$node.select('.busy').classed('hidden', !isBusy);
+  init():Promise<App> {
+    this.$node.html(`<div id="view">${HELLO_WORLD}</div>`);
+
+    return vega.loader()
+      .load('https://vega.github.io/vega/examples/bar-chart.vg.json')
+      .then((data) => this.renderVega(JSON.parse(data)))
+      .then(() => this);
+  }
+
+  private renderVega(spec) {
+    this.vegaView = new vega.View(vega.parse(spec))
+      .renderer('canvas')  // set renderer (canvas or svg)
+      .initialize('#view') // initialize view within parent DOM container
+      .hover() // enable hover encode set processing
+      .run();
   }
 
   getVisStateProps():Promise<IProperty[]> {
