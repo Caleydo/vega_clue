@@ -1,7 +1,10 @@
 {
   "generator-phovea": {
     "type": "app",
+    "name": "vega_clue",
     "app": "Vega CLUE",
+    "author": "The Caleydo Team",
+    "githubAccount": "caleydo",
     "clientOnly": false,
     "entries": {
       "app": "./src/index.ts"
@@ -25,9 +28,6 @@
     ],
     "ignores": [],
     "extensions": [],
-    "name": "vega_clue",
-    "author": "Holger Stitz",
-    "today": "Tue, 13 Mar 2018 10:20:09 GMT",
-    "githubAccount": "thinkh"
+    "today": "Tue, 13 Mar 2018 10:20:09 GMT"
   }
 }
