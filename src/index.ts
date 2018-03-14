@@ -15,5 +15,6 @@ import App from './internal/App';
 
 new AppWrapper<App>({
   prefix: 'vega',
-  name: APP_NAME
+  name: APP_NAME,
+  showCookieDisclaimer: true
 });
