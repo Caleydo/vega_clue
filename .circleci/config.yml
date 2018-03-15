@@ -25,6 +25,9 @@ jobs:
           name: install-npm-wee2
           command: npm install
       - run:
+          name: npm-dedupe
+          command: npm dedupe
+      - run:
           name: dist
           command: npm run dist
       - store_artifacts:
