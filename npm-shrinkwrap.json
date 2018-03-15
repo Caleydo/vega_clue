@@ -7,7 +7,7 @@
           "from": "github:phovea/phovea_ui#develop",
           "dependencies": {
             "phovea_core": {
-              "from": "github:phovea/phovea_core#thinkh/provenance_retrieval"
+              "from": "github:phovea/phovea_core#thinkh/provenance_retrieval_update_dependencies"
             }
           }
         },
@@ -15,7 +15,7 @@
           "from": "github:phovea/phovea_security_flask#develop",
           "dependencies": {
             "phovea_core": {
-              "from": "github:phovea/phovea_core#thinkh/provenance_retrieval"
+              "from": "github:phovea/phovea_core#thinkh/provenance_retrieval_update_dependencies"
             }
           }
         }
@@ -25,7 +25,7 @@
       "from": "github:phovea/phovea_ui#develop",
       "dependencies": {
         "phovea_core": {
-          "from": "github:phovea/phovea_core#thinkh/provenance_retrieval"
+          "from": "github:phovea/phovea_core#thinkh/provenance_retrieval_update_dependencies"
         }
       }
     }
