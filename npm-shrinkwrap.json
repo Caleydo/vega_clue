@@ -4,7 +4,7 @@
       "from": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
       "dependencies": {
         "phovea_core": {
-          "from": "github:phovea/phovea_ui#provenance_retrieval_update_dependencies"
+          "from": "github:phovea/phovea_ui#thinkh/provenance_retrieval_update_dependencies"
         },
         "phovea_ui": {
           "from": "github:phovea/phovea_ui#develop",
