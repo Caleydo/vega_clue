@@ -31,9 +31,9 @@ export function showProveanceGraphNotFoundDialog(manager: CLUEGraphManager, id: 
     dialog.body.innerHTML = `
         <p>
             The requested session <strong>"${id}"</strong> was not found or is not accessible.
-        </p> 
+        </p>
         <p>
-            Possible reasons are that you 
+            Possible reasons are that you
             <ul>
                 <li>requested a <i>temporary session</i> that is already expired</li>
                 <li>tried to access a <i>temporary session</i> of another user</li>
@@ -41,7 +41,7 @@ export function showProveanceGraphNotFoundDialog(manager: CLUEGraphManager, id: 
             </ul>
         </p>
         <p>
-            In the latter two cases, please contact the original owner of the session to create a public persistent session.     
+            In the latter two cases, please contact the original owner of the session to create a public persistent session.
         </p>`;
     dialog.onSubmit(() => {
       dialog.hide();

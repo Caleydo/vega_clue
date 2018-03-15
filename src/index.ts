@@ -14,8 +14,9 @@ import App from './internal/App';
 import './style.scss';
 
 
-new AppWrapper<App>({
+const app = new AppWrapper<App>({
   prefix: 'vega',
   name: APP_NAME,
   showCookieDisclaimer: true
 });
+app.init();

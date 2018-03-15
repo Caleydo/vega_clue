@@ -52,6 +52,9 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
   constructor(options: Partial<IAppWrapperOptions> = {}) {
     super();
     mixin(this.options, options);
+  }
+
+  public init() {
     this.build(document.body, {replaceBody: true});
   }
 
