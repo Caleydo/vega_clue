@@ -47,15 +47,17 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
       <div class="view-wrapper"></div> 
     `);
 
-    const select = this.$node.select('select')
-      .on('change', function() {
-        const vegaSpec = vegaSpecs.filter((ds) => ds.title === this.value);
+    const $select = this.$node.select('select')
+      .on('change', () => {
+        const vegaSpec = $select.selectAll('option')
+            .filter((d, i) => i === $select.property('selectedIndex'))
+            .data();
         if(vegaSpec.length > 0) {
           that.openVegaView(vegaSpec[0])
         }
       });
 
-    const options = select
+    const options = $select
       .selectAll('option')
       .data(vegaSpecs);
     options.enter().append('option').text((d) => d.title);
