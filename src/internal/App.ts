@@ -3,7 +3,6 @@
  */
 
 import * as d3 from 'd3';
-import * as vega from 'vega-lib';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
 import {cat, IObjectRef} from 'phovea_core/src/provenance';
 import {EventHandler} from 'phovea_core/src/event';
@@ -11,8 +10,9 @@ import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
 import {IProperty, IPropertyValue} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
 import {IView} from '../AppWrapper';
-import {default as vegaSpecs} from '../../data';
+import vegaSpecs from '../../data';
 import {VegaView} from './VegaView';
+import {Spec} from 'vega-lib';
 
 export default class App extends EventHandler implements IView<App>, IVisStateApp {
   /**
@@ -76,7 +76,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
     return Promise.resolve(this);
   }
 
-  private openVegaView(spec: vega.Spec): Promise<VegaView> {
+  private openVegaView(spec: Spec): Promise<VegaView> {
     const headerWaitingOverlay = document.getElementById('headerWaitingOverlay');
     headerWaitingOverlay.classList.remove('hidden');
 
