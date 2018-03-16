@@ -2,14 +2,9 @@ import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import {IView} from '../AppWrapper';
 import * as d3 from 'd3';
 import * as vega from 'vega-lib';
-import {Spec} from 'vega-lib';
+import {Spec, Signal} from 'vega-lib';
 
 interface IVegaViewOptions {
-  /**
-   * Should the signal be tracked by default
-   */
-  isSignalActive: boolean;
-
   /**
    * Set the renderer for Vega (svg or canvas)
    */
@@ -19,9 +14,14 @@ interface IVegaViewOptions {
 export class VegaView implements IView<VegaView> {
 
   private readonly options: IVegaViewOptions = {
-    isSignalActive: true,
-    vegaRenderer: 'svg'
+    vegaRenderer: 'canvas',
   };
+
+  /**
+   * RegExp to activate the signal when the string contains `mouseup`, `touchend`, or `click`.
+   * @type {RegExp}
+   */
+  private readonly activateSignal: RegExp = /(mouseup|touchend|click)/g;
 
   private readonly $node: d3.Selection<vega.View>;
 
@@ -33,7 +33,9 @@ export class VegaView implements IView<VegaView> {
       return;
     }
 
-    console.log(name, value, (<any>this.$node.datum()).getState()); // cast to <any>, because `getState()` is not available in 'vega-typings'
+    // cast to <any>, because `getState()` is missing in 'vega-typings'
+    const vegaView =  (<any>this.$node.datum());
+    console.log(name, value, vegaView.getState());
   };
 
   constructor(parent: HTMLElement, graph: ProvenanceGraph, private spec: Spec) {
@@ -48,21 +50,23 @@ export class VegaView implements IView<VegaView> {
 
   init(): Promise<VegaView> {
     // set default values for signals -- default: true
-    this.spec.signals.forEach((d) => this.isSignalActiveMap.set(d.name, this.options.isSignalActive));
+    this.spec.signals.forEach((d) => this.isSignalActiveMap.set(d.name, this.shouldSignalBeActive(d)));
 
     this.initSignalSelector();
 
     const vegaView: vega.View = new vega.View(vega.parse(this.spec))
+      //.logLevel(vega.Warn) // set view logging level
       .renderer(this.options.vegaRenderer)  // set renderer (canvas or svg)
       .initialize(<Element>this.$node.select('.vega-wrapper').node()) // initialize view within parent DOM container
-      .hover() // enable hover encode set processing
-      .run();
+      .hover(); // enable hover encode set processing
 
-    this.addSignalListener(vegaView);
+    const vegaViewReady = (<any>vegaView).runAsync() // type cast to any because `runAsync` is missing in 'vega-typings'
+      .then(() => this.addSignalListener(vegaView));
 
+    vegaView.run(); // run after defining the promise
     this.$node.datum(vegaView);
 
-    return Promise.resolve(this);
+    return vegaViewReady.then(() => this);
   }
 
   private initSignalSelector() {
@@ -87,6 +91,7 @@ export class VegaView implements IView<VegaView> {
   remove() {
     const vegaView = this.$node.datum();
     this.removeSignalListener(vegaView);
+    vegaView.finalize();
     this.$node.remove();
   }
 
@@ -104,5 +109,18 @@ export class VegaView implements IView<VegaView> {
         vegaView.removeSignalListener(signal.name, this.signalHandler);
       });
     }
+  }
+
+  /**
+   * Check all events of the signal.
+   * If the event contains a `mouseup`, `touchend`, or `click` then activate the signal.
+   * Otherwise deactivate the signal.
+   * @param {Signal} signal
+   */
+  private shouldSignalBeActive(signal: Signal): boolean {
+    if(!signal.on) {
+      return false;
+    }
+    return signal.on.some((d) => this.activateSignal.test(d.events.toString()));
   }
 }
