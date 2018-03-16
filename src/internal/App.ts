@@ -3,6 +3,7 @@
  */
 
 import * as d3 from 'd3';
+import * as Ajv from 'ajv';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
 import {cat, IObjectRef} from 'phovea_core/src/provenance';
 import {EventHandler} from 'phovea_core/src/event';
@@ -77,6 +78,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
         vega.loader()
           .load(url)
           .then((data) => JSON.parse(data))
+          .then((json) => this.validateVegaData(json)) //
           .then((spec: Spec) => {
             // for now just check for official Vega examples and transform relative data url
             const dataUrl = (url.indexOf('vega.github.io') > -1) ? this.vegaDatasetUrl : '';
@@ -118,6 +120,10 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
     this.$node.html('No available Vega Specs loaded');
     return Promise.resolve(this);
+  }
+
+  private validateVegaData(spec: Spec) {
+
   }
 
   private transformToAbsoluteUrls(spec: Spec, dataUrl: string) {
