@@ -10,5 +10,20 @@ label,
 strong,
 b,
 .label {
-  font-weight: 500 !important;
+  font-weight: 500;
+}
+
+main[data-anchor="main"] {
+  display: flex;
+  overflow: auto;
+
+  .app {
+    flex: 1;
+    margin: 10px;
+  }
+
+  .dataset-selector {
+    padding-bottom: 10px;
+    border-bottom: 1px solid $core_border;
+  }
 }

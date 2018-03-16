@@ -14,13 +14,21 @@ export class VegaView implements IView<VegaView> {
   };
 
   constructor(parent: HTMLElement, graph: ProvenanceGraph, private spec: Spec) {
-    this.$node = d3.select(parent).append('div').classed('vega-view', true);
+    this.$node = d3.select(parent)
+      .append('div')
+      .classed('vega-view', true)
+      .html(`
+        <form class="signal-selector"><p><strong>List of tracked signals</strong></p></form>
+        <div class="vega-wrapper"></div>
+      `);
   }
 
   init(): Promise<VegaView> {
+    this.initSignalSelector();
+
     const vegaView: vega.View = new vega.View(vega.parse(this.spec))
       .renderer('svg')  // set renderer (canvas or svg)
-      .initialize(<Element>this.$node.node()) // initialize view within parent DOM container
+      .initialize(<Element>this.$node.select('.vega-wrapper').node()) // initialize view within parent DOM container
       .hover() // enable hover encode set processing
       .run();
 
@@ -31,6 +39,19 @@ export class VegaView implements IView<VegaView> {
     return Promise.resolve(this);
   }
 
+  private initSignalSelector() {
+    const $signals = this.$node.select('.signal-selector')
+      .selectAll('.checkbox').data(this.spec.signals);
+
+    $signals.enter()
+      .append('div')
+      .classed('checkbox', true)
+      .html(`<label><input type="checkbox" checked><span></span></label>`);
+
+    $signals.select('span').text((d) => d.name);
+
+    $signals.exit().remove();
+  }
 
   remove() {
     const vegaView = this.$node.datum();

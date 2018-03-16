@@ -32,7 +32,10 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
     // need old name for compatibility
     this.ref = this.graph.findOrAddObject(this, 'App', cat.visual);
 
-    this.$node = d3.select(parent).append('div').classed('app', true).datum(this);
+    this.$node = d3.select(parent)
+      .append('div')
+      .classed('app', true)
+      .datum(this);
   }
 
   /**
@@ -40,20 +43,23 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
    * @returns {Promise<App>}
    */
   init(): Promise<App> {
-    const that = this;
-
     this.$node.html(`
-      <select><!-- select a vega specification --></select>
+      <form class="dataset-selector form-inline">
+        <div class="form-group">
+          <label for="example-selector">Select an example:</label>
+          <select id="example-selector" class="form-control"><!-- select a vega specification --></select>
+        </div>
+      </form>
       <div class="view-wrapper"></div> 
     `);
 
-    const $select = this.$node.select('select')
+    const $select = this.$node.select('.dataset-selector select')
       .on('change', () => {
-        const vegaSpec = $select.selectAll('option')
+        const vegaSpecs = $select.selectAll('option')
             .filter((d, i) => i === $select.property('selectedIndex'))
             .data();
-        if(vegaSpec.length > 0) {
-          that.openVegaView(vegaSpec[0])
+        if(vegaSpecs.length > 0) {
+          this.openVegaView(vegaSpecs[0])
         }
       });
 

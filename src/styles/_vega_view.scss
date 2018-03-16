@@ -1,0 +1,23 @@
+
+.vega-view {
+  display: flex;
+
+  .signal-selector {
+    min-width: 170px;
+    padding: 10px 30px 10px 0;
+    border-right: 1px solid $core_border;
+
+    label {
+      display: block;
+      font-weight: 400;
+
+      &:hover {
+        font-weight: 500;
+      }
+    }
+  }
+
+  .vega-wrapper {
+    padding: 10px;
+  }
+}
