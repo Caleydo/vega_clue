@@ -4,24 +4,10 @@ import interactiveLegend from './interactive-legend.vg.json';
 import overviewPlusDetail from './overview-plus-detail.vg.json';
 
 const vegaSpecs = [
-  barChart,
-  crossfilterFlights,
   interactiveLegend,
-  overviewPlusDetail
+  overviewPlusDetail,
+  crossfilterFlights,
+  barChart
 ];
-
-/**
- * Prefix dataset URLs to load it from extern
- */
-vegaSpecs.forEach((ds) => {
-  if(ds.data) {
-    ds.data = ds.data.map((d) => {
-      if(d.url) {
-        d.url = 'https://vega.github.io/editor/' + d.url;
-      }
-      return d;
-    });
-  }
-});
 
 export default vegaSpecs;

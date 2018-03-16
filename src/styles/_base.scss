@@ -25,5 +25,9 @@ main[data-anchor="main"] {
   .dataset-selector {
     padding-bottom: 10px;
     border-bottom: 1px solid $core_border;
+
+    #url {
+      width: 400px;
+    }
   }
 }

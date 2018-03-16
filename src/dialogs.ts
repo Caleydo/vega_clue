@@ -55,3 +55,26 @@ export function showProveanceGraphNotFoundDialog(manager: CLUEGraphManager, id: 
     dialog.show();
   });
 }
+
+export function showLoadErrorDialog() {
+  lazyDialogModule().then(({generateDialog}) => {
+    const dialog = generateDialog('Error loading Vega JSON Specification!', 'Close');
+    dialog.body.innerHTML = `
+        <p>
+            We could not find a valid Vega JSON Specification for the given URL. 
+        </p>
+        <p>
+            Please check the URL or try a different one.
+        </p>`;
+    dialog.onSubmit(() => {
+      dialog.hide();
+      return false;
+    });
+    dialog.onHide(() => {
+      dialog.destroy();
+    });
+
+    dialog.show();
+  });
+}
+
