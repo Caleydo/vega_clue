@@ -2,7 +2,7 @@ import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import {IView} from '../AppWrapper';
 import * as d3 from 'd3';
 import * as vega from 'vega-lib';
-import {Spec, Signal} from 'vega-lib';
+import {Spec, Signal, View} from 'vega-lib';
 
 interface IVegaViewOptions {
   /**
@@ -14,7 +14,7 @@ interface IVegaViewOptions {
 export class VegaView implements IView<VegaView> {
 
   private readonly options: IVegaViewOptions = {
-    vegaRenderer: 'canvas',
+    vegaRenderer: 'svg',
   };
 
   /**
@@ -23,7 +23,7 @@ export class VegaView implements IView<VegaView> {
    */
   private readonly activateSignal: RegExp = /(mouseup|touchend|click)/g;
 
-  private readonly $node: d3.Selection<vega.View>;
+  private readonly $node: d3.Selection<View>;
 
   private readonly isSignalActiveMap: Map<string, boolean> = new Map<string, boolean>();
 
@@ -43,7 +43,9 @@ export class VegaView implements IView<VegaView> {
       .append('div')
       .classed('vega-view', true)
       .html(`
-        <form class="signal-selector"><p><strong>List of tracked signals</strong></p></form>
+        <div class="side-panel">
+            <form class="signal-selector"><p><strong>List of signals</strong></p></form>
+        </div>
         <div class="vega-wrapper"></div>
       `);
   }
@@ -52,9 +54,9 @@ export class VegaView implements IView<VegaView> {
     // set default values for signals -- default: true
     this.spec.signals.forEach((d) => this.isSignalActiveMap.set(d.name, this.shouldSignalBeActive(d)));
 
-    this.initSignalSelector();
+    this.initSelector('.signal-selector', this.spec.signals, this.isSignalActiveMap);
 
-    const vegaView: vega.View = new vega.View(vega.parse(this.spec))
+    const vegaView: View = new View(vega.parse(this.spec))
       //.logLevel(vega.Warn) // set view logging level
       .renderer(this.options.vegaRenderer)  // set renderer (canvas or svg)
       .initialize(<Element>this.$node.select('.vega-wrapper').node()) // initialize view within parent DOM container
@@ -69,9 +71,9 @@ export class VegaView implements IView<VegaView> {
     return vegaViewReady.then(() => this);
   }
 
-  private initSignalSelector() {
-    const $signals = this.$node.select('.signal-selector')
-      .selectAll('.checkbox').data(this.spec.signals);
+  private initSelector(selector: string, data: any[], isActiveMap: Map<string, boolean>) {
+    const $signals = this.$node.select(selector)
+      .selectAll('.checkbox').data(data);
 
     $signals.enter()
       .append('div')
@@ -80,9 +82,9 @@ export class VegaView implements IView<VegaView> {
 
     $signals.select('span').text((d) => d.name);
     $signals.select('input')
-      .attr('checked', (d) => (this.isSignalActiveMap.get(d.name)) ? 'checked' : null)
+      .attr('checked', (d) => (isActiveMap.get(d.name)) ? 'checked' : null)
       .on('change', (d) => {
-        this.isSignalActiveMap.set(d.name, !this.isSignalActiveMap.get(d.name));
+        isActiveMap.set(d.name, !isActiveMap.get(d.name));
       });
 
     $signals.exit().remove();
@@ -95,7 +97,7 @@ export class VegaView implements IView<VegaView> {
     this.$node.remove();
   }
 
-  private addSignalListener(vegaView) {
+  private addSignalListener(vegaView: View) {
     if(this.spec.signals) {
       this.spec.signals.forEach((signal) => {
         vegaView.addSignalListener(signal.name, this.signalHandler);
@@ -103,7 +105,7 @@ export class VegaView implements IView<VegaView> {
     }
   }
 
-  private removeSignalListener(vegaView) {
+  private removeSignalListener(vegaView: View) {
     if(this.spec.signals) {
       this.spec.signals.forEach((signal) => {
         vegaView.removeSignalListener(signal.name, this.signalHandler);
