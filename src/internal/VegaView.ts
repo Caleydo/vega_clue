@@ -4,12 +4,35 @@ import * as d3 from 'd3';
 import * as vega from 'vega-lib';
 import {Spec} from 'vega-lib';
 
+interface IVegaViewOptions {
+  /**
+   * Should the signal be tracked by default
+   */
+  isSignalActive: boolean;
+
+  /**
+   * Set the renderer for Vega (svg or canvas)
+   */
+  vegaRenderer: 'canvas' | 'svg' | 'none';
+}
 
 export class VegaView implements IView<VegaView> {
 
+  private readonly options: IVegaViewOptions = {
+    isSignalActive: true,
+    vegaRenderer: 'svg'
+  };
+
   private readonly $node: d3.Selection<vega.View>;
 
+  private readonly isSignalActiveMap: Map<string, boolean> = new Map<string, boolean>();
+
   private signalHandler = (name, value) => {
+    // ignore signals that are not listed or disabled
+    if(!this.isSignalActiveMap.has(name) || !this.isSignalActiveMap.get(name)) {
+      return;
+    }
+
     console.log(name, value, (<any>this.$node.datum()).getState()); // cast to <any>, because `getState()` is not available in 'vega-typings'
   };
 
@@ -24,10 +47,13 @@ export class VegaView implements IView<VegaView> {
   }
 
   init(): Promise<VegaView> {
+    // set default values for signals -- default: true
+    this.spec.signals.forEach((d) => this.isSignalActiveMap.set(d.name, this.options.isSignalActive));
+
     this.initSignalSelector();
 
     const vegaView: vega.View = new vega.View(vega.parse(this.spec))
-      .renderer('svg')  // set renderer (canvas or svg)
+      .renderer(this.options.vegaRenderer)  // set renderer (canvas or svg)
       .initialize(<Element>this.$node.select('.vega-wrapper').node()) // initialize view within parent DOM container
       .hover() // enable hover encode set processing
       .run();
@@ -46,9 +72,14 @@ export class VegaView implements IView<VegaView> {
     $signals.enter()
       .append('div')
       .classed('checkbox', true)
-      .html(`<label><input type="checkbox" checked><span></span></label>`);
+      .html(`<label><input type="checkbox"><span></span></label>`);
 
     $signals.select('span').text((d) => d.name);
+    $signals.select('input')
+      .attr('checked', (d) => (this.isSignalActiveMap.get(d.name)) ? 'checked' : null)
+      .on('change', (d) => {
+        this.isSignalActiveMap.set(d.name, !this.isSignalActiveMap.get(d.name));
+      });
 
     $signals.exit().remove();
   }
