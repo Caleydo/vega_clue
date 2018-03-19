@@ -16,5 +16,11 @@ module.exports = function (registry) {
     factory: 'setStateImpl'
   });
 
+  registry.push('actionCompressor', 'vegaSetState', function () {
+    return import ('./src/internal/cmds')
+  }, {
+    factory: 'stateCompressor'
+  });
+
   // generator-phovea:end
 };
