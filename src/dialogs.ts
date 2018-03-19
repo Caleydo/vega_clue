@@ -61,7 +61,7 @@ export function showLoadErrorDialog() {
     const dialog = generateDialog('Error loading Vega JSON Specification!', 'Close');
     dialog.body.innerHTML = `
         <p>
-            We could not find a valid Vega JSON Specification for the given URL. 
+            We could not find a valid Vega JSON Specification for the given URL.
         </p>
         <p>
             Please check the URL or try a different one.
