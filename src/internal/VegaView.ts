@@ -23,19 +23,41 @@ export class VegaView implements IView<VegaView> {
    */
   private readonly activateSignal: RegExp = /(mouseup|touchend|click)/g;
 
+  /**
+   * List of signals that are used by this CLUE connector
+   * @type {Signal[]}
+   */
+  private readonly clueSignals: Signal[] = [
+    {
+      "name": "CLUE_captureState",
+      "value": null,
+      "on": [
+        {"events": "mousedown, touchstart", "update": "null", "force": true}
+      ]
+    }
+  ];
+
   private readonly $node: d3.Selection<View>;
 
-  private readonly isSignalActiveMap: Map<string, boolean> = new Map<string, boolean>();
+  private readonly activeSignals: Map<string, boolean> = new Map<string, boolean>();
+
+  private readonly history: History = new History();
 
   private signalHandler = (name, value) => {
     // ignore signals that are not listed or disabled
-    if(!this.isSignalActiveMap.has(name) || !this.isSignalActiveMap.get(name)) {
+    if(!this.activeSignals.has(name) || !this.activeSignals.get(name)) {
       return;
     }
 
     // cast to <any>, because `getState()` is missing in 'vega-typings'
-    const vegaView =  (<any>this.$node.datum());
+    const vegaView = (<any>this.$node.datum());
     console.log(name, value, vegaView.getState());
+
+    // capture vega state and add to history
+    if(name === this.clueSignals[0].name) {
+      this.history.pushState(vegaView.getState());
+      console.log('history', this.history);
+    }
   };
 
   constructor(parent: HTMLElement, graph: ProvenanceGraph, private spec: Spec) {
@@ -44,17 +66,22 @@ export class VegaView implements IView<VegaView> {
       .classed('vega-view', true)
       .html(`
         <div class="side-panel">
-            <form class="signal-selector"><p><strong>List of signals</strong></p></form>
+          <button class="btn btn-default btn-undo"><i class="fa fa-undo"></i> Undo</button>
+          <button class="btn btn-default btn-redo"><i class="fa fa-repeat"></i> Redo</button>
+          <hr>
+          <form class="signal-selector"><p><strong>List of signals</strong></p></form>
         </div>
         <div class="vega-wrapper"></div>
       `);
   }
 
   init(): Promise<VegaView> {
-    // set default values for signals -- default: true
-    this.spec.signals.forEach((d) => this.isSignalActiveMap.set(d.name, this.shouldSignalBeActive(d)));
+    this.spec.signals = this.initClueSignals(this.spec.signals);
 
-    this.initSelector('.signal-selector', this.spec.signals, this.isSignalActiveMap);
+    // set default values for signals -- default: true
+    //this.spec.signals.forEach((d) => this.activeSignals.set(d.name, this.shouldSignalBeActive(d)));
+
+    this.initSelector('.signal-selector', this.spec.signals, this.activeSignals);
 
     const vegaView: View = new View(vega.parse(this.spec))
       //.logLevel(vega.Warn) // set view logging level
@@ -63,12 +90,37 @@ export class VegaView implements IView<VegaView> {
       .hover(); // enable hover encode set processing
 
     const vegaViewReady = (<any>vegaView).runAsync() // type cast to any because `runAsync` is missing in 'vega-typings'
-      .then(() => this.addSignalListener(vegaView));
+      .then(() => {
+        this.history.pushState((<any>vegaView).getState());
+        console.log('history', this.history);
+        this.addSignalListener(vegaView);
+      });
 
     vegaView.run(); // run after defining the promise
     this.$node.datum(vegaView);
 
+    this.$node.select('.btn-undo')
+      .on('click', () => {
+        (<any>vegaView).setState(this.history.prevState());
+        console.log('history', this.history);
+      });
+
+    this.$node.select('.btn-redo')
+      .on('click', () => {
+        (<any>vegaView).setState(this.history.nextState());
+        console.log('history', this.history);
+      });
+
     return vegaViewReady.then(() => this);
+  }
+
+  private initClueSignals(signals: Signal[]): Signal[] {
+    if(!signals) {
+      signals = [];
+    }
+    // activate all CLUE signals by default
+    this.clueSignals.forEach((d) => this.activeSignals.set(d.name, true));
+    return [...this.clueSignals, ...signals];
   }
 
   private initSelector(selector: string, data: any[], isActiveMap: Map<string, boolean>) {
@@ -124,5 +176,43 @@ export class VegaView implements IView<VegaView> {
       return false;
     }
     return signal.on.some((d) => this.activateSignal.test(d.events.toString()));
+  }
+}
+
+class History {
+
+  states: any[] = [];
+  cursor: number = 0;
+
+  constructor() {
+
+  }
+
+  pushState(state: any): number {
+    this.states.push(state);
+    this.cursor = this.states.length - 1;
+    return this.cursor;
+  }
+
+  prevState(): any {
+    if(this.cursor - 1 < 0) {
+      console.log('Beginning of history... returning the first state');
+      return this.states[this.cursor];
+    }
+    this.cursor--;
+    return this.states[this.cursor];
+  }
+
+  nextState(): any {
+    if(this.cursor + 1 >= this.states.length) {
+      console.log('End of history... returning the last state');
+      return this.states[this.cursor];
+    }
+    this.cursor++;
+    return this.states[this.cursor];
+  }
+
+  currState(): any {
+    return this.states[this.cursor];
   }
 }

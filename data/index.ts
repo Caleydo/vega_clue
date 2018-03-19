@@ -70,6 +70,7 @@ export interface IVegaSpecDataset {
 }
 
 const vegaSpecs: IVegaSpecDataset[] = [
+  {title: 'Global Development', spec: GlobalDevelopment},
   {title: 'Airport Connections', spec: AirportConnections},
   {title: 'Annual Temperature', spec: AnnualTemperature},
   {title: 'Arc Diagram', spec: ArcDiagram},
@@ -94,7 +95,6 @@ const vegaSpecs: IVegaSpecDataset[] = [
   {title: 'Error Bars', spec: ErrorBars},
   {title: 'Falkensee Population', spec: FalkenseePopulation},
   {title: 'Force Directed Layout', spec: ForceDirectedLayout},
-  {title: 'Global Development', spec: GlobalDevelopment},
   {title: 'Grouped Bar Chart', spec: GroupedBarChart},
   {title: 'Heatmap', spec: Heatmap},
   {title: 'Histogram Null Values', spec: HistogramNullValues},
