@@ -1,8 +1,10 @@
 import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import {IView} from '../AppWrapper';
+import {cat, IObjectRef, ref} from 'phovea_core/src/provenance';
 import * as d3 from 'd3';
 import * as vega from 'vega-lib';
 import {Spec, Signal, View} from 'vega-lib';
+import {setState} from './cmds';
 
 interface IVegaViewOptions {
   /**
@@ -29,10 +31,10 @@ export class VegaView implements IView<VegaView> {
    */
   private readonly clueSignals: Signal[] = [
     {
-      "name": "CLUE_captureState",
-      "value": null,
-      "on": [
-        {"events": "mousedown, touchstart", "update": "null", "force": true}
+      'name': 'CLUE_captureState',
+      'value': null,
+      'on': [
+        {'events': 'mousedown, touchstart', 'update': 'null', 'force': true}
       ]
     }
   ];
@@ -41,11 +43,12 @@ export class VegaView implements IView<VegaView> {
 
   private readonly activeSignals: Map<string, boolean> = new Map<string, boolean>();
 
-  private readonly history: History = new History();
+  readonly ref: IObjectRef<VegaView>;
+  private currentState: any = null;
 
   private signalHandler = (name, value) => {
     // ignore signals that are not listed or disabled
-    if(!this.activeSignals.has(name) || !this.activeSignals.get(name)) {
+    if (!this.activeSignals.has(name) || !this.activeSignals.get(name)) {
       return;
     }
 
@@ -54,13 +57,18 @@ export class VegaView implements IView<VegaView> {
     console.log(name, value, vegaView.getState());
 
     // capture vega state and add to history
-    if(name === this.clueSignals[0].name) {
-      this.history.pushState(vegaView.getState());
-      console.log('history', this.history);
+    if (name === this.clueSignals[0].name) {
+      const bak = this.currentState;
+      this.currentState = vegaView.getState();
+      this.graph.pushWithResult(setState(this.ref, vegaView.getState()), {
+        inverse: setState(this.ref, bak)
+      });
     }
-  };
+  }
 
-  constructor(parent: HTMLElement, graph: ProvenanceGraph, private spec: Spec) {
+  constructor(parent: HTMLElement, private readonly graph: ProvenanceGraph, private spec: Spec) {
+    this.ref = this.graph.findOrAddObject(ref(this, spec.title ? String(spec.title) : 'View', cat.visual));
+
     this.$node = d3.select(parent)
       .append('div')
       .classed('vega-view', true)
@@ -91,8 +99,7 @@ export class VegaView implements IView<VegaView> {
 
     const vegaViewReady = (<any>vegaView).runAsync() // type cast to any because `runAsync` is missing in 'vega-typings'
       .then(() => {
-        this.history.pushState((<any>vegaView).getState());
-        console.log('history', this.history);
+        this.currentState = (<any>vegaView).getState();
         this.addSignalListener(vegaView);
       });
 
@@ -101,21 +108,23 @@ export class VegaView implements IView<VegaView> {
 
     this.$node.select('.btn-undo')
       .on('click', () => {
-        (<any>vegaView).setState(this.history.prevState());
-        console.log('history', this.history);
+        this.graph.undo();
       });
 
     this.$node.select('.btn-redo')
       .on('click', () => {
-        (<any>vegaView).setState(this.history.nextState());
-        console.log('history', this.history);
+        // NOT possible
+        const next = this.graph.act.nextState;
+        if (next) {
+          this.graph.jumpTo(next);
+        }
       });
 
     return vegaViewReady.then(() => this);
   }
 
   private initClueSignals(signals: Signal[]): Signal[] {
-    if(!signals) {
+    if (!signals) {
       signals = [];
     }
     // activate all CLUE signals by default
@@ -142,6 +151,11 @@ export class VegaView implements IView<VegaView> {
     $signals.exit().remove();
   }
 
+  setStateImpl(state: any) {
+    const vegaView = <any>this.$node.datum();
+    vegaView.setState(state);
+  }
+
   remove() {
     const vegaView = this.$node.datum();
     this.removeSignalListener(vegaView);
@@ -150,7 +164,7 @@ export class VegaView implements IView<VegaView> {
   }
 
   private addSignalListener(vegaView: View) {
-    if(this.spec.signals) {
+    if (this.spec.signals) {
       this.spec.signals.forEach((signal) => {
         vegaView.addSignalListener(signal.name, this.signalHandler);
       });
@@ -158,7 +172,7 @@ export class VegaView implements IView<VegaView> {
   }
 
   private removeSignalListener(vegaView: View) {
-    if(this.spec.signals) {
+    if (this.spec.signals) {
       this.spec.signals.forEach((signal) => {
         vegaView.removeSignalListener(signal.name, this.signalHandler);
       });
@@ -172,47 +186,9 @@ export class VegaView implements IView<VegaView> {
    * @param {Signal} signal
    */
   private shouldSignalBeActive(signal: Signal): boolean {
-    if(!signal.on) {
+    if (!signal.on) {
       return false;
     }
     return signal.on.some((d) => this.activateSignal.test(d.events.toString()));
-  }
-}
-
-class History {
-
-  states: any[] = [];
-  cursor: number = 0;
-
-  constructor() {
-
-  }
-
-  pushState(state: any): number {
-    this.states.push(state);
-    this.cursor = this.states.length - 1;
-    return this.cursor;
-  }
-
-  prevState(): any {
-    if(this.cursor - 1 < 0) {
-      console.log('Beginning of history... returning the first state');
-      return this.states[this.cursor];
-    }
-    this.cursor--;
-    return this.states[this.cursor];
-  }
-
-  nextState(): any {
-    if(this.cursor + 1 >= this.states.length) {
-      console.log('End of history... returning the last state');
-      return this.states[this.cursor];
-    }
-    this.cursor++;
-    return this.states[this.cursor];
-  }
-
-  currState(): any {
-    return this.states[this.cursor];
   }
 }

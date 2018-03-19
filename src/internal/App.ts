@@ -25,7 +25,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
   private readonly $node: d3.Selection<App>;
 
-  private vegaView:VegaView;
+  private vegaView: VegaView;
 
   private readonly vegaExampleUrl = 'https://vega.github.io/vega/examples/interactive-legend.vg.json';
   private readonly vegaDatasetUrl = 'https://vega.github.io/vega-datasets/';
@@ -63,7 +63,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
         </div>
         <button type="submit" class="btn btn-default">Load</button>
       </form>
-      <div class="view-wrapper"></div> 
+      <div class="view-wrapper"></div>
     `);
 
     this.$node.select('form.dataset-selector')
@@ -92,15 +92,15 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
     const $select = this.$node.select('.dataset-selector select')
       .on('change', () => {
         const datasets: IVegaSpecDataset[] = $select.selectAll('option')
-            .filter((d, i) => i === $select.property('selectedIndex'))
-            .data();
-        if(datasets.length > 0) {
-          this.openVegaView(datasets[0].spec)
+          .filter((d, i) => i === $select.property('selectedIndex'))
+          .data();
+        if (datasets.length > 0) {
+          this.openVegaView(datasets[0].spec);
         }
       });
 
     const datasets: IVegaSpecDataset[] = vegaSpecs.map((dataset: IVegaSpecDataset) => {
-      if(dataset.spec.data) {
+      if (dataset.spec.data) {
         dataset.spec = this.transformToAbsoluteUrls(dataset.spec, this.vegaDatasetUrl);
       }
       return dataset;
@@ -112,7 +112,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
     options.enter().append('option').text((d) => d.title);
     options.exit().remove();
 
-    if(datasets.length > 0) {
+    if (datasets.length > 0) {
       return this.openVegaView(datasets[0].spec)
         .then(() => this);
     }
@@ -127,9 +127,9 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
   }
 
   private transformToAbsoluteUrls(spec: Spec, dataUrl: string) {
-    if(spec.data) {
+    if (spec.data) {
       spec.data = spec.data.map((d: any) => {
-        if(d.url) {
+        if (d.url) {
           d.url = dataUrl + d.url;
         }
         return d;
@@ -140,7 +140,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
   private openVegaView(spec: Spec): Promise<VegaView> {
     // remove old view first
-    if(this.vegaView) {
+    if (this.vegaView) {
       this.vegaView.remove();
     }
 
