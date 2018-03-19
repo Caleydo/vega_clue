@@ -3,7 +3,6 @@
  */
 
 import * as d3 from 'd3';
-import * as Ajv from 'ajv';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
 import {cat, IObjectRef} from 'phovea_core/src/provenance';
 import {EventHandler} from 'phovea_core/src/event';
@@ -11,7 +10,7 @@ import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
 import {IProperty, IPropertyValue} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
 import {IView} from '../AppWrapper';
-import vegaSpecs from '../../data';
+import vegaSpecs, {IVegaSpecDataset} from '../../data';
 import {VegaView} from './VegaView';
 import {Spec} from 'vega-lib';
 import * as vega from 'vega-lib';
@@ -78,7 +77,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
         vega.loader()
           .load(url)
           .then((data) => JSON.parse(data))
-          .then((json) => this.validateVegaData(json)) //
+          .then((json) => this.validateVegaData(json))
           .then((spec: Spec) => {
             // for now just check for official Vega examples and transform relative data url
             const dataUrl = (url.indexOf('vega.github.io') > -1) ? this.vegaDatasetUrl : '';
@@ -92,29 +91,29 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
     const $select = this.$node.select('.dataset-selector select')
       .on('change', () => {
-        const vegaSpecs = $select.selectAll('option')
+        const datasets: IVegaSpecDataset[] = $select.selectAll('option')
             .filter((d, i) => i === $select.property('selectedIndex'))
             .data();
-        if(vegaSpecs.length > 0) {
-          this.openVegaView(vegaSpecs[0])
+        if(datasets.length > 0) {
+          this.openVegaView(datasets[0].spec)
         }
       });
 
-    const specs = vegaSpecs.map((spec) => {
-      if(spec.data) {
-        return spec = this.transformToAbsoluteUrls(spec, this.vegaDatasetUrl);
+    const datasets: IVegaSpecDataset[] = vegaSpecs.map((dataset: IVegaSpecDataset) => {
+      if(dataset.spec.data) {
+        dataset.spec = this.transformToAbsoluteUrls(dataset.spec, this.vegaDatasetUrl);
       }
-      return spec;
+      return dataset;
     });
 
     const options = $select
       .selectAll('option')
-      .data(specs);
+      .data(datasets);
     options.enter().append('option').text((d) => d.title);
     options.exit().remove();
 
-    if(specs.length > 0) {
-      return this.openVegaView(specs[0])
+    if(datasets.length > 0) {
+      return this.openVegaView(datasets[0].spec)
         .then(() => this);
     }
 
@@ -123,7 +122,8 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
   }
 
   private validateVegaData(spec: Spec) {
-
+    // TODO to be implemented; could use https://github.com/vega/editor/blob/e98f9ee9678aae37bca651b8f25e487ba0b3ed13/src/utils/validate.ts
+    return spec;
   }
 
   private transformToAbsoluteUrls(spec: Spec, dataUrl: string) {
