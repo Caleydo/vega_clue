@@ -153,7 +153,10 @@ export class VegaView implements IView<VegaView> {
 
   setStateImpl(state: any) {
     const vegaView = <any>this.$node.datum();
+    const bak = this.currentState;
+    this.currentState = state;
     vegaView.setState(state);
+    return bak;
   }
 
   remove() {
