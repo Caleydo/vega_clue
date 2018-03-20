@@ -106,11 +106,22 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
       return dataset;
     });
 
-    const options = $select
-      .selectAll('option')
-      .data(datasets);
-    options.enter().append('option').text((d) => d.title);
-    options.exit().remove();
+    const nested_data = d3.nest()
+      .key((d: IVegaSpecDataset) => d.category)
+      .entries(datasets);
+
+    const $optgroups = $select
+      .selectAll('optgroup')
+      .data(nested_data);
+
+    const $optgroupEnter = $optgroups.enter().append('optgroup')
+      .attr('label', (d) => d.key);
+
+    const $options = $optgroupEnter.selectAll('option').data((d) => d.values);
+    $options.enter().append('option').text((d: IVegaSpecDataset) => d.title);
+    $options.exit().remove();
+
+    $optgroups.exit().remove();
 
     if (datasets.length > 0) {
       return this.openVegaView(datasets[0].spec)
