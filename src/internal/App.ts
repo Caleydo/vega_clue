@@ -5,7 +5,7 @@
 import * as d3 from 'd3';
 import * as $ from 'jquery';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
-import {cat, IObjectRef} from 'phovea_core/src/provenance';
+import {cat, IObjectRef, ref} from 'phovea_core/src/provenance';
 import {EventHandler} from 'phovea_core/src/event';
 import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
@@ -16,6 +16,7 @@ import {VegaView} from './VegaView';
 import {Spec} from 'vega-lib';
 import * as vega from 'vega-lib';
 import {showLoadErrorDialog} from '../dialogs';
+import {setSpec} from './cmds';
 
 export default class App extends EventHandler implements IView<App>, IVisStateApp {
   /**
@@ -23,6 +24,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
    * @type {IObjectRef<App>}
    */
   readonly ref: IObjectRef<App>;
+  private currentSpec: Spec = null;
 
   private readonly $node: d3.Selection<App>;
 
@@ -36,7 +38,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
     // add OrdinoApp app as (first) object to provenance graph
     // need old name for compatibility
-    this.ref = this.graph.findOrAddObject(this, 'App', cat.visual);
+    this.ref = this.graph.findOrAddObject(ref(this, 'App', cat.visual));
 
     this.$node = d3.select(parent)
       .append('div')
@@ -84,7 +86,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
             const dataUrl = (url.indexOf('vega.github.io') > -1) ? this.vegaDatasetUrl : '';
             return this.transformToAbsoluteUrls(spec, dataUrl);
           })
-          .then((spec: Spec) => this.openVegaView(spec))
+          .then((spec: Spec) => this.switchVegaSpec(spec, 'External Specification'))
           .catch(showLoadErrorDialog);
 
         return false;
@@ -125,13 +127,13 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
           .filter((d, i) => i === $select.property('selectedIndex'))
           .data();
         if (datasets.length > 0) {
-          this.openVegaView(datasets[0].spec);
+          this.switchVegaSpec(datasets[0].spec, datasets[0].title);
         }
       });
 
     if (datasets.length > 0) {
-      return this.openVegaView(datasets[0].spec)
-        .then(() => this);
+      this.switchVegaSpec(datasets[0].spec, datasets[0].title);
+      return Promise.resolve(this);
     }
 
     this.$node.html('No available Vega Specs loaded');
@@ -155,6 +157,47 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
     return spec;
   }
 
+  /**
+   * Switch the currently loaded Vega specification.
+   * Push the new specification to the provenance graph and open it in the vega view
+   * @param {Spec} spec
+   * @param {string} title
+   */
+  private switchVegaSpec(spec: Spec, title: string) {
+    const bak = this.currentSpec;
+    this.currentSpec = spec;
+    this.graph
+      .pushWithResult(setSpec(this.ref, spec, title), {
+        inverse: setSpec(this.ref, bak, title)
+      })
+      .then(() => this.setSpecImpl(spec))
+  }
+
+  /**
+   * Set a given specification.
+   * This function is registered and called from the provenance graph.
+   * @param {Spec} spec
+   * @returns {Spec}
+   */
+  setSpecImpl(spec: Spec) {
+    const bak = this.currentSpec;
+    this.currentSpec = spec;
+
+    if(spec) {
+      this.openVegaView(spec);
+
+    } else if(this.vegaView) {
+      this.vegaView.remove();
+    }
+
+    return bak;
+  }
+
+  /**
+   * Open a new Vega view for the given specification
+   * @param {Spec} spec
+   * @returns {Promise<VegaView>}
+   */
   private openVegaView(spec: Spec): Promise<VegaView> {
     // remove old view first
     if (this.vegaView) {
