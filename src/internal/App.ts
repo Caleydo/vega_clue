@@ -3,6 +3,7 @@
  */
 
 import * as d3 from 'd3';
+import * as $ from 'jquery';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
 import {cat, IObjectRef} from 'phovea_core/src/provenance';
 import {EventHandler} from 'phovea_core/src/event';
@@ -89,15 +90,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
         return false;
       });
 
-    const $select = this.$node.select('.dataset-selector select')
-      .on('change', () => {
-        const datasets: IVegaSpecDataset[] = $select.selectAll('option')
-          .filter((d, i) => i === $select.property('selectedIndex'))
-          .data();
-        if (datasets.length > 0) {
-          this.openVegaView(datasets[0].spec);
-        }
-      });
+    const $select = this.$node.select('.dataset-selector select');
 
     const datasets: IVegaSpecDataset[] = vegaSpecs.map((dataset: IVegaSpecDataset) => {
       if (dataset.spec.data) {
@@ -122,6 +115,19 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
     $options.exit().remove();
 
     $optgroups.exit().remove();
+
+    $($select.node())
+      .select2({
+        theme: 'bootstrap'
+      })
+      .on('select2:select', () => {
+        const datasets: IVegaSpecDataset[] = $select.selectAll('option')
+          .filter((d, i) => i === $select.property('selectedIndex'))
+          .data();
+        if (datasets.length > 0) {
+          this.openVegaView(datasets[0].spec);
+        }
+      });
 
     if (datasets.length > 0) {
       return this.openVegaView(datasets[0].spec)
