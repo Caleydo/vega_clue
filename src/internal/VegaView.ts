@@ -129,7 +129,11 @@ export class VegaView implements IView<VegaView> {
     }
     // activate all CLUE signals by default
     this.clueSignals.forEach((d) => this.activeSignals.set(d.name, true));
-    return [...this.clueSignals, ...signals];
+
+    // find and add CLUE signals that has not been added before
+    const newClueSignals = this.clueSignals.filter((d) => !signals.some((s) => s.name === d.name));
+
+    return [...newClueSignals, ...signals];
   }
 
   private initSelector(selector: string, data: any[], isActiveMap: Map<string, boolean>) {

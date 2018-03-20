@@ -22,5 +22,17 @@ module.exports = function (registry) {
     factory: 'stateCompressor'
   });
 
+  registry.push('actionFunction', 'vegaSetSpec', function () {
+    return import ('./src/internal/cmds')
+  }, {
+    factory: 'setSpecImpl'
+  });
+
+  registry.push('actionCompressor', 'vegaSetSpec', function () {
+    return import ('./src/internal/cmds')
+  }, {
+    factory: 'specCompressor'
+  });
+
   // generator-phovea:end
 };
