@@ -5,12 +5,22 @@
  **************************************************************************** */
 
 //register all extensions in the registry following the given pattern
-module.exports = function(registry) {
-  /// #if include('extension-type', 'extension-id')	
+module.exports = function (registry) {
+  /// #if include('extension-type', 'extension-id')
   //registry.push('extension-type', 'extension-id', function() { return import('./src/extension_impl'); }, {});
   /// #endif
   // generator-phovea:begin
+  registry.push('actionFunction', 'vegaSetState', function () {
+    return import ('./src/internal/cmds')
+  }, {
+    factory: 'setStateImpl'
+  });
+
+  registry.push('actionCompressor', 'vegaSetState', function () {
+    return import ('./src/internal/cmds')
+  }, {
+    factory: 'stateCompressor'
+  });
 
   // generator-phovea:end
 };
-
