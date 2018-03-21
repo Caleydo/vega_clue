@@ -53,17 +53,17 @@
         },
         {
           "type": "formula",
-          "as": "fertility",
+          "as": "x",
           "expr": "datum.this.fertility"
         },
         {
           "type": "formula",
-          "as": "life_expect",
+          "as": "y",
           "expr": "datum.this.life_expect"
         },
         {
           "type": "formula",
-          "as": "population",
+          "as": "size",
           "expr": "datum.this.population"
         }
       ]
@@ -93,6 +93,21 @@
         "update": "currentYear"
       }],
       "bind": {"input": "range", "min": 1800, "max": 2015, "step": 1}
+    },
+    {
+      "name": "attr_x",
+      "value": "fertility",
+      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
+    },
+    {
+      "name": "attr_y",
+      "value": "life_expect",
+      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
+    },
+    {
+      "name": "attr_size",
+      "value": "population",
+      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
     }
   ],
 
@@ -185,9 +200,9 @@
           "fill": {"scale": "color", "field": "this.continent"}
         },
         "update": {
-          "x": {"scale": "x", "field": "fertility"},
-          "y": {"scale": "y", "field": "life_expect"},
-          "size": {"scale": "size", "field": "population"},
+          "x": {"scale": "x", "field": "x"},
+          "y": {"scale": "y", "field": "y"},
+          "size": {"scale": "size", "field": "size"},
           "fillOpacity": [
             {
               "test": "indata('trackCountries', 'country', datum.country)",
@@ -212,8 +227,8 @@
           "baseline": {"value": "bottom"}
         },
         "update": {
-          "x": {"scale": "x", "field": "fertility"},
-          "y": {"scale": "y", "field": "life_expect", "offset": -7},
+          "x": {"scale": "x", "field": "x"},
+          "y": {"scale": "y", "field": "y", "offset": -7},
           "fillOpacity": [
             {
               "test": "indata('trackCountries', 'country', datum.country)",
