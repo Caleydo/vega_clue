@@ -10,14 +10,21 @@
       "values": []
     },
     {
-      "name": "clusters",
+      "name": "continents",
       "values": [
-        {"id": 0, "name": "South Asia"},
-        {"id": 1, "name": "Europe & Central Asia"},
-        {"id": 2, "name": "Sub-Saharan Africa"},
-        {"id": 3, "name": "America"},
-        {"id": 4, "name": "East Asia & Pacific"},
-        {"id": 5, "name": "Middle East & North Africa"}
+        {"id": 0, "name": "Africa"},
+        {"id": 1, "name": "America"},
+        {"id": 2, "name": "Asia"},
+        {"id": 3, "name": "Europe"}
+      ]
+    },
+    {
+      "name": "main_religion",
+      "values": [
+        {"id": 0, "name": "Christian"},
+        {"id": 1, "name": "Eastern religions"},
+        {"id": 2, "name": "Muslim"},
+        {"id": 3, "name": "Not Categorized"}
       ]
     },
     {
@@ -251,14 +258,14 @@
     {
       "name": "color",
       "type": "ordinal",
-      "domain": {"data": "gapminder", "field": "cluster"},
+      "domain": {"data": "gapminder", "field": "continent"},
       "range": "category"
     },
     {
       "name": "label",
       "type": "ordinal",
-      "domain": {"data": "clusters", "field": "id"},
-      "range": {"data": "clusters", "field": "name"}
+      "domain": {"data": "continents", "field": "id"},
+      "range": {"data": "continents", "field": "name"}
     }
   ],
 
@@ -342,7 +349,7 @@
       "from": {"data": "interpolate"},
       "encode": {
         "enter": {
-          "fill": {"scale": "color", "field": "this.cluster"},
+          "fill": {"scale": "color", "field": "this.continent"},
           "size": {"value": 150}
         },
         "update": {
