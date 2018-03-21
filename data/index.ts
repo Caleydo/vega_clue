@@ -1,6 +1,4 @@
-import {Spec} from 'vega-lib';
-
-import AirportConnections from './airport-connections.vg.json';
+/*import AirportConnections from './airport-connections.vg.json';
 import AnnualTemperature from './annual-temperature.vg.json';
 import ArcDiagram from './arc-diagram.vg.json';
 import AreaChart from './area-chart.vg.json';
@@ -62,7 +60,63 @@ import WheatPlot from './wheat-plot.vg.json';
 import WordCloud from './word-cloud.vg.json';
 import WorldMap from './world-map.vg.json';
 import ZoomableScatterPlot from './zoomable-scatter-plot.vg.json';
-import ZoomableWorldMap from './zoomable-world-map.vg.json';
+import ZoomableWorldMap from './zoomable-world-map.vg.json';*/
+
+import {Spec} from 'vega-lib';
+import {tsv} from 'd3';
+
+import * as csvGdp from 'file-loader!./gapminder/gdp.txt';
+import * as csvChildMortality from 'file-loader!./gapminder/childmortality.txt';
+import * as csvContinent from 'file-loader!./gapminder/continent.txt';
+import * as csvFertility from 'file-loader!./gapminder/fertility.txt';
+import * as csvLifetimeExpectancy from 'file-loader!./gapminder/lifeexpectancy.txt';
+import * as csvReligions from 'file-loader!./gapminder/main_religions.txt';
+import * as csvPopulation from 'file-loader!./gapminder/totalPop_interpolated.txt';
+import Gapminder from './gapminder/Gapminder.vg.json';
+
+
+function loadTsvData(dataset, filterFnc = (entry) => entry[0] !== 'country') {
+  return new Promise<any[]>((resolve) => {
+    tsv(dataset, (rawRow) => {
+      return Object.entries(rawRow).filter(filterFnc);
+    }, (_error, data) => {
+      resolve(data);
+    });
+  });
+}
+
+const gapminderData = Promise.all([
+  loadTsvData(csvGdp, (entry) => entry[0] === 'country'),
+  loadTsvData(csvGdp),
+  loadTsvData(csvChildMortality),
+  loadTsvData(csvContinent),
+  loadTsvData(csvFertility),
+  loadTsvData(csvLifetimeExpectancy),
+  loadTsvData(csvReligions),
+  loadTsvData(csvPopulation)
+]).then((csv) => {
+  const [country, gdp, childMortality, continent, fertility, lifetimeExpectancy, religions, population] = [...csv];
+  const data = [];
+
+  country.forEach((d, i) => {
+    gdp[i].forEach((e, j) => {
+      const r = {
+        continent: continent[i][0][1],
+        religions: religions[i][0][1],
+        country: country[i][0][1],
+        year: +gdp[i][j][0],
+        gdp: +gdp[i][j][1],
+        child_mortality: +childMortality[i][j][1],
+        fertility: +fertility[i][j][1],
+        life_expect: +lifetimeExpectancy[i][j][1],
+        pop: +population[i][j][1],
+      };
+      data.push(r);
+    });
+  });
+
+  return data;
+});
 
 export interface IVegaSpecDataset {
   title: string,
@@ -71,7 +125,7 @@ export interface IVegaSpecDataset {
 }
 
 enum ECategories {
-  BAR_CHARTS = 'Bar Charts',
+  /*BAR_CHARTS = 'Bar Charts',
   LINE_CHARTS = 'Line & Area Charts',
   CIRCULAR_CHARTS = 'Circular Charts',
   SCATTER_PLOTS = 'Dot & Scatter Plots',
@@ -80,13 +134,12 @@ enum ECategories {
   TREE_DIAGRAMS = 'Tree Diagrams',
   NETWORK_DIAGRAMS = 'Network Diagrams',
   OTHER_CHARTS = 'Other Chart Types',
-  CUSTOM_VISUAL_DESIGNS = 'Custom Visual Designs',
+  CUSTOM_VISUAL_DESIGNS = 'Custom Visual Designs',*/
   INTERACTION_TECHNIQUES = 'Interaction Techniques'
 }
 
 const vegaSpecs: IVegaSpecDataset[] = [
-  {title: 'Global Development', spec: GlobalDevelopment, category: ECategories.INTERACTION_TECHNIQUES},
-  {title: 'Airport Connections', spec: AirportConnections, category: ECategories.NETWORK_DIAGRAMS},
+  /*{title: 'Airport Connections', spec: AirportConnections, category: ECategories.NETWORK_DIAGRAMS},
   {title: 'Annual Temperature', spec: AnnualTemperature, category: ECategories.CUSTOM_VISUAL_DESIGNS},
   {title: 'Arc Diagram', spec: ArcDiagram, category: ECategories.NETWORK_DIAGRAMS},
   {title: 'Area Chart', spec: AreaChart, category: ECategories.LINE_CHARTS},
@@ -110,6 +163,7 @@ const vegaSpecs: IVegaSpecDataset[] = [
   {title: 'Error Bars', spec: ErrorBars, category: ECategories.SCATTER_PLOTS},
   {title: 'Falkensee Population', spec: FalkenseePopulation, category: ECategories.CUSTOM_VISUAL_DESIGNS},
   {title: 'Force Directed Layout', spec: ForceDirectedLayout, category: ECategories.NETWORK_DIAGRAMS},
+  {title: 'Global Development', spec: GlobalDevelopment, category: ECategories.INTERACTION_TECHNIQUES},
   {title: 'Grouped Bar Chart', spec: GroupedBarChart, category: ECategories.BAR_CHARTS},
   {title: 'Heatmap', spec: Heatmap, category: ECategories.OTHER_CHARTS},
   {title: 'Histogram Null Values', spec: HistogramNullValues, category: ECategories.DISTRIBUTIONS},
@@ -147,7 +201,21 @@ const vegaSpecs: IVegaSpecDataset[] = [
   {title: 'Word Cloud', spec: WordCloud, category: ECategories.OTHER_CHARTS},
   {title: 'World Map', spec: WorldMap, category: ECategories.MAPS},
   {title: 'Zoomable Scatter Plot', spec: ZoomableScatterPlot, category: ECategories.INTERACTION_TECHNIQUES},
-  {title: 'Zoomable World Map', spec: ZoomableWorldMap, category: ECategories.MAPS},
+  {title: 'Zoomable World Map', spec: ZoomableWorldMap, category: ECategories.MAPS},*/
 ];
 
-export default vegaSpecs;
+export function loadDatasets(): Promise<IVegaSpecDataset[]> {
+  return gapminderData
+    .then((data) => {
+      Gapminder.data[0].values = data;
+
+      return {
+        title: 'Gapminder',
+        spec: Gapminder,
+        category: ECategories.INTERACTION_TECHNIQUES
+      }
+    })
+    .then((gapminder: IVegaSpecDataset) => {
+      return [gapminder, ...vegaSpecs];
+    });
+}
