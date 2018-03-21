@@ -72,7 +72,7 @@ import * as csvFertility from 'file-loader!./gapminder/fertility.txt';
 import * as csvLifetimeExpectancy from 'file-loader!./gapminder/lifeexpectancy.txt';
 import * as csvReligions from 'file-loader!./gapminder/main_religions.txt';
 import * as csvPopulation from 'file-loader!./gapminder/totalPop_interpolated.txt';
-import Gapminder from './gapminder/Gapminder.vg.json';
+import Gapminder from './gapminder/gapminder.vg.json';
 
 enum EGapminderContinents {
   AFRICA = 0,
