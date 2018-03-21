@@ -60,6 +60,11 @@
           "type": "formula",
           "as": "life_expect",
           "expr": "datum.this.life_expect"
+        },
+        {
+          "type": "formula",
+          "as": "population",
+          "expr": "datum.this.population"
         }
       ]
     },
@@ -103,6 +108,12 @@
       "type": "linear", "nice": true, "zero": false,
       "domain": {"data": "gapminder", "field": "life_expect"},
       "range": "height"
+    },
+    {
+      "name": "size",
+      "type": "linear", "nice": true, "zero": false,
+      "domain": {"data": "gapminder", "field": "population"},
+      "range": [40, 6400]
     },
     {
       "name": "color",
@@ -171,12 +182,12 @@
       "from": {"data": "interpolate"},
       "encode": {
         "enter": {
-          "fill": {"scale": "color", "field": "this.continent"},
-          "size": {"value": 150}
+          "fill": {"scale": "color", "field": "this.continent"}
         },
         "update": {
           "x": {"scale": "x", "field": "fertility"},
           "y": {"scale": "y", "field": "life_expect"},
+          "size": {"scale": "size", "field": "population"},
           "fillOpacity": [
             {
               "test": "indata('trackCountries', 'country', datum.country)",

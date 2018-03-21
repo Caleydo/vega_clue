@@ -153,7 +153,7 @@ const gapminderData = Promise.all([
         child_mortality: +childMortality[i][j][1],
         fertility: +fertility[i][j][1],
         life_expect: +lifetimeExpectancy[i][j][1],
-        pop: +population[i][j][1],
+        population: +population[i][j][1],
       };
       data.push(r);
     });
