@@ -54,17 +54,17 @@
         {
           "type": "formula",
           "as": "x",
-          "expr": "datum.this.fertility"
+          "expr": "datum.this[xField]"
         },
         {
           "type": "formula",
           "as": "y",
-          "expr": "datum.this.life_expect"
+          "expr": "datum.this[yField]"
         },
         {
           "type": "formula",
           "as": "size",
-          "expr": "datum.this.population"
+          "expr": "datum.this[sizeField]"
         }
       ]
     },
@@ -95,17 +95,17 @@
       "bind": {"input": "range", "min": 1800, "max": 2015, "step": 1}
     },
     {
-      "name": "attr_x",
+      "name": "xField",
       "value": "fertility",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
     },
     {
-      "name": "attr_y",
+      "name": "yField",
       "value": "life_expect",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
     },
     {
-      "name": "attr_size",
+      "name": "sizeField",
       "value": "population",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
     }
@@ -115,19 +115,19 @@
     {
       "name": "x",
       "type": "linear", "nice": true,
-      "domain": {"data": "gapminder", "field": "fertility"},
+      "domain": {"data": "gapminder", "field": {"signal": "xField"}},
       "range": "width"
     },
     {
       "name": "y",
       "type": "linear", "nice": true, "zero": false,
-      "domain": {"data": "gapminder", "field": "life_expect"},
+      "domain": {"data": "gapminder", "field": {"signal": "yField"}},
       "range": "height"
     },
     {
       "name": "size",
       "type": "linear", "nice": true, "zero": false,
-      "domain": {"data": "gapminder", "field": "population"},
+      "domain": {"data": "gapminder", "field": {"signal": "sizeField"}},
       "range": [40, 6400]
     },
     {
@@ -146,12 +146,12 @@
 
   "axes": [
     {
-      "title": "Fertility",
+      "title": {"signal": "xField"},
       "orient": "bottom", "scale": "x",
       "grid": true, "tickCount": 5
     },
     {
-      "title": "Life Expectancy",
+      "title": {"signal": "yField"},
       "orient": "left", "scale": "y",
       "grid": true, "tickCount": 5
     }
