@@ -19,5 +19,42 @@
 
   .vega-wrapper {
     padding: 10px;
+
+    > * {
+      vertical-align: middle;
+    }
+
+    .marks {
+      margin-right: 1em;
+    }
+
+    .vega-bindings {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .vega-bind-name {
+      display: inline-block;
+      width: 105px;
+    }
+
+    .vega-bind {
+      input[type="range"] {
+        padding: 0;
+      }
+
+      select {
+        max-width: 200px;
+      }
+
+      label {
+        margin-left: 4px;
+      }
+    }
+
+    .vega-bind-radio label {
+      margin-left: 0;
+      margin-right: 4px;
+    }
   }
 }

@@ -38,7 +38,7 @@
       ]
     },
     {
-      "name": "interpolate",
+      "name": "filteredCountries",
       "source": "countries",
       "transform": [
         {
@@ -183,18 +183,19 @@
       "encode": {
         "update": {
           "text": {"signal": "currentYear"},
-          "x": {"value": 300},
+          "x": {"value": 230},
           "y": {"value": 300},
           "fill": {"value": "grey"},
-          "fillOpacity": {"value": 0.25},
-          "fontSize": {"value": 100}
+          "fillOpacity": {"value": 0.20},
+          "fontSize": {"value": 150},
+          "fontWeight": {"value": "bold"}
         }
       }
     },
     {
       "name": "point",
       "type": "symbol",
-      "from": {"data": "interpolate"},
+      "from": {"data": "filteredCountries"},
       "encode": {
         "update": {
           "fill": {"scale": "color", "field": "color"},
@@ -213,7 +214,7 @@
     },
     {
       "type": "text",
-      "from": {"data": "interpolate"},
+      "from": {"data": "filteredCountries"},
       "interactive": false,
       "encode": {
         "enter": {
