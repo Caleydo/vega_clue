@@ -74,50 +74,6 @@ import * as csvReligions from 'file-loader!./gapminder/main_religions.txt';
 import * as csvPopulation from 'file-loader!./gapminder/totalPop_interpolated.txt';
 import Gapminder from './gapminder/gapminder.vg.json';
 
-enum EGapminderContinents {
-  AFRICA = 0,
-  AMERICA = 1,
-  ASIA = 2,
-  EUROPE = 3
-}
-
-function getContinentId(continent): EGapminderContinents {
-  switch(continent) {
-    case 'Africa':
-      return EGapminderContinents.AFRICA;
-    case 'America':
-      return EGapminderContinents.AMERICA;
-    case 'Asia':
-      return EGapminderContinents.ASIA;
-    case 'Europe':
-      return EGapminderContinents.EUROPE;
-    default:
-      return -1;
-  }
-}
-
-
-enum EGapminderMainReligions {
-  CHRISTIAN = 0,
-  EASTERN_RELIGION = 1,
-  MUSLIM = 2,
-  NOT_CATEGORIZED = 3
-}
-
-function getMainReligionId(religion): EGapminderMainReligions {
-  switch(religion) {
-    case 'Christian':
-      return EGapminderMainReligions.CHRISTIAN;
-    case 'Eastern religions':
-      return EGapminderMainReligions.EASTERN_RELIGION;
-    case 'Muslim':
-      return EGapminderMainReligions.MUSLIM;
-    case 'Not Categorized':
-      return EGapminderMainReligions.NOT_CATEGORIZED;
-    default:
-      return -1;
-  }
-}
 
 function loadTsvData(dataset, filterFnc = (entry) => entry[0] !== 'country') {
   return new Promise<any[]>((resolve) => {
@@ -145,8 +101,8 @@ const gapminderData = Promise.all([
   country.forEach((d, i) => {
     gdp[i].forEach((e, j) => {
       const r = {
-        continent: getContinentId(continent[i][0][1]),
-        religions: getMainReligionId(religions[i][0][1]),
+        continent: continent[i][0][1],
+        main_religion: religions[i][0][1],
         country: country[i][0][1],
         year: +gdp[i][j][0],
         gdp: +gdp[i][j][1],

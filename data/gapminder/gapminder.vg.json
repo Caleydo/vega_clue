@@ -10,28 +10,24 @@
       "values": []
     },
     {
-      "name": "continents",
-      "values": [
-        {"id": 0, "name": "Africa"},
-        {"id": 1, "name": "America"},
-        {"id": 2, "name": "Asia"},
-        {"id": 3, "name": "Europe"}
-      ]
-    },
-    {
-      "name": "main_religion",
-      "values": [
-        {"id": 0, "name": "Christian"},
-        {"id": 1, "name": "Eastern religions"},
-        {"id": 2, "name": "Muslim"},
-        {"id": 3, "name": "Not Categorized"}
-      ]
-    },
-    {
       "name": "thisYear",
       "source": "gapminder",
       "transform": [
         {"type": "filter", "expr": "datum.year == currentYear"}
+      ]
+    },
+    {
+      "name": "continents",
+      "source": "gapminder",
+      "transform": [
+        {"type": "aggregate", "groupby": ["continent"]}
+      ]
+    },
+    {
+      "name": "mainReligions",
+      "source": "gapminder",
+      "transform": [
+        {"type": "aggregate", "groupby": ["main_religion"]}
       ]
     },
     {
@@ -65,6 +61,11 @@
           "type": "formula",
           "as": "size",
           "expr": "datum.this[sizeField]"
+        },
+        {
+          "type": "formula",
+          "as": "color",
+          "expr": "datum.this[colorField]"
         }
       ]
     },
@@ -108,6 +109,11 @@
       "name": "sizeField",
       "value": "population",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
+    },
+    {
+      "name": "colorField",
+      "value": "continent",
+      "bind": {"input": "select", "options": ["continent", "main_religion"]}
     }
   ],
 
@@ -133,14 +139,8 @@
     {
       "name": "color",
       "type": "ordinal",
-      "domain": {"data": "gapminder", "field": "continent"},
+      "domain": {"data": "gapminder", "field": {"signal": "colorField"}},
       "range": "category"
-    },
-    {
-      "name": "label",
-      "type": "ordinal",
-      "domain": {"data": "continents", "field": "id"},
-      "range": {"data": "continents", "field": "name"}
     }
   ],
 
@@ -160,7 +160,7 @@
   "legends": [
     {
       "fill": "color",
-      "title": "Continent",
+      "title": {"signal": "colorField"},
       "orient": "right",
       "encode": {
         "symbols": {
@@ -170,7 +170,7 @@
         },
         "labels": {
           "update": {
-            "text": {"scale": "label", "field": "value"}
+            "text": {"field": "value"}
           }
         }
       }
@@ -196,10 +196,8 @@
       "type": "symbol",
       "from": {"data": "interpolate"},
       "encode": {
-        "enter": {
-          "fill": {"scale": "color", "field": "this.continent"}
-        },
         "update": {
+          "fill": {"scale": "color", "field": "color"},
           "x": {"scale": "x", "field": "x"},
           "y": {"scale": "y", "field": "y"},
           "size": {"scale": "size", "field": "size"},
