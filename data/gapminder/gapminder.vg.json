@@ -208,6 +208,12 @@
               "value": 1
             },
             {"value": 0.5}
+          ],
+          "tooltip": {"field": "country"}
+        },
+        "hover": {
+          "fillOpacity": [
+            {"value": 0.8}
           ]
         }
       }
