@@ -1,17 +1,14 @@
 import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import {IView} from '../AppWrapper';
 import {cat, IObjectRef, ref} from 'phovea_core/src/provenance';
+// best solution to import Handlebars (@see https://github.com/wycats/handlebars.js/issues/1174)
+import * as handlebars from 'handlebars/dist/handlebars';
 import * as d3 from 'd3';
 import * as vega from 'vega-lib';
-import {Spec, View, NewSignal, BindCheckbox, BindRadioSelect, BindRange} from 'vega-lib';
+import {Spec, View, BindRange} from 'vega-lib';
 import {setState} from './cmds';
+import {ClueSignal, IAsyncData, IAsyncSignal} from './spec';
 
-/**
- * Extend the Vega Signal specification about tracking
- */
-interface ClueSignal extends NewSignal {
-  track: boolean;
-}
 
 interface IVegaViewOptions {
   /**
@@ -49,14 +46,35 @@ export class VegaView implements IView<VegaView> {
     // cast to <any>, because `getState()` is missing in 'vega-typings'
     const vegaView = (<any>this.$node.datum());
     const signalSpec: ClueSignal = <ClueSignal>this.spec.signals.find((d) => d.name === name)!;
-    console.log(name, value, vegaView.getState(), signalSpec);
+    const context = {name, value};
 
-    // capture vega state and add to history
-    const bak = this.currentState;
-    this.currentState = vegaView.getState();
-    this.graph.pushWithResult(setState(this.ref, `${name} = ${value}`, vegaView.getState()), {
-      inverse: setState(this.ref, `${name} = ${value}`, bak)
-    });
+    if(signalSpec.track.async) {
+      vegaView.runAsync().then((view) => {
+        const async = signalSpec.track.async;
+
+        async.filter((d: IAsyncSignal) => d.signal)
+          .forEach((d: IAsyncSignal) => {
+            const key = (d.as) ? d.as : d.signal;
+            context[key] = view.signal(d.signal);
+          });
+
+        async.filter((d: IAsyncData) => d.data)
+          .forEach((d: IAsyncData) => {
+            const key = (d.as) ? d.as : d.data;
+            context[key] = view.data(d.data);
+          });
+
+        const template = handlebars.compile(signalSpec.track.title);
+        const title = template(context);
+        this.pushNewGraphNode(title, vegaView.getState());
+      });
+
+    } else {
+      const rawTitle = (signalSpec.track.title) ? signalSpec.track.title : `{{name}} = {{value}}`;
+      const template = handlebars.compile(rawTitle);
+      const title = template(context);
+      this.pushNewGraphNode(title, vegaView.getState());
+    }
   }
 
   constructor(parent: HTMLElement, private readonly graph: ProvenanceGraph, private spec: Spec) {
@@ -100,6 +118,15 @@ export class VegaView implements IView<VegaView> {
     this.blockSignalHandler = false;
 
     return bak;
+  }
+
+  private pushNewGraphNode(title: string, state: any) {
+    // capture vega state and add to history
+    const bak = this.currentState;
+    this.currentState = state;
+    this.graph.pushWithResult(setState(this.ref, title, state), {
+      inverse: setState(this.ref, title, bak)
+    });
   }
 
   remove() {

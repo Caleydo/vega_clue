@@ -70,51 +70,94 @@
       ]
     },
     {
-      "name": "trackCountries",
+      "name": "selectedCountries",
       "on": [
-        {"trigger": "active", "toggle": "{country: active.country}"}
+        {"trigger": "clear", "remove": true},
+        {"trigger": "!shift", "remove": true},
+        {"trigger": "!shift && clicked", "insert": "clicked"},
+        {"trigger": "shift && clicked", "toggle": "clicked"}
       ]
     }
   ],
 
   "signals": [
     {
-      "name": "active",
-      "value": {},
+      "name": "selectedCountries",
       "on": [
-        {"events": "@point:mousedown, @point:touchstart", "update": "datum"},
-        {"events": "window:mouseup, window:touchend", "update": "{}"}
+        {"events": {"signal": "clicked"}, "update": "null", "force": true}
+      ],
+      "track": {
+        "async": [
+          {"data": "selectedCountries", "as": "allCountries"},
+          {"signal": "clicked", "as": "lastCountry"}
+        ],
+        "title": "Selected {{lastCountry.country}} ({{allCountries.length}} Countries)"
+      }
+    },
+    {
+      "name": "clear",
+      "value": true,
+      "on": [
+        {"events": "mouseup[!event.item]", "update": "true", "force": true}
+      ],
+      "track": {
+        "async": [],
+        "title": "No Countries Selected"
+      }
+    },
+    {
+      "name": "shift",
+      "value": false,
+      "on": [
+        {"events": "@point:click", "update": "event.shiftKey", "force": true}
+      ]
+    },
+    {
+      "name": "clicked",
+      "value": null,
+      "on": [
+        {"events": "@point:click", "update": "datum", "force": true}
       ]
     },
     {
       "name": "currentYear",
       "value": 1980,
       "bind": {"input": "range", "min": 1800, "max": 2015, "step": 1},
-      "track": true
+      "track": {
+        "title": "Selected Year {{value}}"
+      }
     },
     {
       "name": "xField",
       "value": "fertility",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]},
-      "track": true
+      "track": {
+        "title": "X = {{value}}"
+      }
     },
     {
       "name": "yField",
       "value": "life_expect",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]},
-      "track": true
+      "track": {
+        "title": "Y = {{value}}"
+      }
     },
     {
       "name": "sizeField",
       "value": "population",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]},
-      "track": true
+      "track": {
+        "title": "Size = {{value}}"
+      }
     },
     {
       "name": "colorField",
       "value": "continent",
       "bind": {"input": "select", "options": ["continent", "main_religion"]},
-      "track": true
+      "track": {
+        "title": "Color = {{value}}"
+      }
     }
   ],
 
@@ -205,7 +248,7 @@
           "size": {"scale": "size", "field": "size"},
           "fillOpacity": [
             {
-              "test": "indata('trackCountries', 'country', datum.country)",
+              "test": "indata('selectedCountries', 'country', datum.country)",
               "value": 1
             },
             {"value": 0.5}
@@ -237,7 +280,7 @@
           "y": {"scale": "y", "field": "y", "offset": -7},
           "fillOpacity": [
             {
-              "test": "indata('trackCountries', 'country', datum.country)",
+              "test": "indata('selectedCountries', 'country', datum.country)",
               "value": 0.8
             },
             {"value": 0}
