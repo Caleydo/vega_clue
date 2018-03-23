@@ -48,38 +48,41 @@ export class VegaView implements IView<VegaView> {
     const signalSpec: ClueSignal = <ClueSignal>this.spec.signals.find((d) => d.name === name)!;
     const context = {name, value};
 
-    function createMetadata(): ISetStateMetadata {
-      const rawTitle = (signalSpec.track.title) ? signalSpec.track.title : `{{name}} = {{value}}`;
-      const template = handlebars.compile(rawTitle);
-      return {
-        name: template(context),
-        category: signalSpec.track.category || 'data',
-        operation: signalSpec.track.operation || 'update'
-      };
-    }
+    let promise = Promise.resolve(true);
 
+    // if async flag set wait for Vega dataflow is complete
     if(signalSpec.track.async) {
-      vegaView.runAsync().then((view) => {
-        const async = signalSpec.track.async;
+      promise = vegaView.runAsync()
+        .then((view) => {
+          const async = signalSpec.track.async;
 
-        async.filter((d: IAsyncSignal) => d.signal)
-          .forEach((d: IAsyncSignal) => {
-            const key = (d.as) ? d.as : d.signal;
-            context[key] = view.signal(d.signal);
-          });
+          async.filter((d: IAsyncSignal) => d.signal)
+            .forEach((d: IAsyncSignal) => {
+              const key = (d.as) ? d.as : d.signal;
+              context[key] = view.signal(d.signal);
+            });
 
-        async.filter((d: IAsyncData) => d.data)
-          .forEach((d: IAsyncData) => {
-            const key = (d.as) ? d.as : d.data;
-            context[key] = view.data(d.data);
-          });
-
-        this.pushNewGraphNode(createMetadata(), vegaView.getState());
-      });
-
-    } else {
-      this.pushNewGraphNode(createMetadata(), vegaView.getState());
+          async.filter((d: IAsyncData) => d.data)
+            .forEach((d: IAsyncData) => {
+              const key = (d.as) ? d.as : d.data;
+              context[key] = view.data(d.data);
+            });
+        });
     }
+
+    promise
+      .then((): ISetStateMetadata => {
+        const rawTitle = (signalSpec.track.title) ? signalSpec.track.title : `{{name}} = {{value}}`;
+        const template = handlebars.compile(rawTitle);
+        return {
+          name: template(context),
+          category: signalSpec.track.category || 'data',
+          operation: signalSpec.track.operation || 'update'
+        };
+      })
+      .then((metadata) => {
+        this.pushNewGraphNode(metadata, vegaView.getState());
+      });
   }
 
   constructor(parent: HTMLElement, private readonly graph: ProvenanceGraph, private spec: Spec) {
