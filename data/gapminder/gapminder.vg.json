@@ -98,22 +98,26 @@
     {
       "name": "xField",
       "value": "fertility",
-      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
+      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]},
+      "track": true
     },
     {
       "name": "yField",
       "value": "life_expect",
-      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
+      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]},
+      "track": true
     },
     {
       "name": "sizeField",
       "value": "population",
-      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
+      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]},
+      "track": true
     },
     {
       "name": "colorField",
       "value": "continent",
-      "bind": {"input": "select", "options": ["continent", "main_religion"]}
+      "bind": {"input": "select", "options": ["continent", "main_religion"]},
+      "track": true
     }
   ],
 
