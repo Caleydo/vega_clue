@@ -89,11 +89,8 @@
     {
       "name": "currentYear",
       "value": 1980,
-      "on":[{
-        "events": "mousemove, touchmove",
-        "update": "currentYear"
-      }],
-      "bind": {"input": "range", "min": 1800, "max": 2015, "step": 1}
+      "bind": {"input": "range", "min": 1800, "max": 2015, "step": 1},
+      "track": true
     },
     {
       "name": "xField",

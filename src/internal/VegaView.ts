@@ -20,6 +20,12 @@ interface IVegaViewOptions {
   vegaRenderer: 'canvas' | 'svg' | 'none';
 }
 
+interface IRangeDOMListener {
+  dragging: boolean;
+  elem: d3.Selection<any>;
+  listener: Map<string, () => void>;
+}
+
 export class VegaView implements IView<VegaView> {
 
   private readonly options: IVegaViewOptions = {
@@ -30,6 +36,8 @@ export class VegaView implements IView<VegaView> {
 
   readonly ref: IObjectRef<VegaView>;
   private currentState: any = null;
+
+  private rangeDOMListener: IRangeDOMListener[] = [];
 
   private blockSignalHandler: boolean = false;
 
@@ -42,20 +50,6 @@ export class VegaView implements IView<VegaView> {
     const vegaView = (<any>this.$node.datum());
     const signalSpec: ClueSignal = <ClueSignal>this.spec.signals.find((d) => d.name === name)!;
     console.log(name, value, vegaView.getState(), signalSpec);
-
-    let actionName = ``;
-
-    if(signalSpec.bind) {
-      switch ((<BindCheckbox | BindRadioSelect | BindRange>signalSpec.bind).input) {
-        case 'select':
-        case 'radio':
-          actionName = `${name} = ${value}`;
-          break;
-        case 'range':
-          console.log('changed range binding');
-          break;
-      }
-    }
 
     // capture vega state and add to history
     const bak = this.currentState;
@@ -119,8 +113,13 @@ export class VegaView implements IView<VegaView> {
     if (this.spec.signals) {
       this.spec.signals
         .filter((signal: ClueSignal) => signal.track)
-        .forEach((signal) => {
-          vegaView.addSignalListener(signal.name, this.signalHandler);
+        .forEach((signal: ClueSignal) => {
+          // check for range input
+          if(signal.bind && (<BindRange>signal.bind).input === 'range') {
+            this.addRangeDOMListener(signal.name, (<BindRange>signal.bind).input);
+          } else {
+            vegaView.addSignalListener(signal.name, this.signalHandler);
+          }
         });
     }
   }
@@ -133,5 +132,48 @@ export class VegaView implements IView<VegaView> {
           vegaView.removeSignalListener(signal.name, this.signalHandler);
         });
     }
+    // remove all DOM listener at once
+    this.removeRangeDOMListener();
+  }
+
+  private addRangeDOMListener(signalName, inputType) {
+    const domListener: IRangeDOMListener = {
+      dragging: false,
+      elem: this.$node.select(`input[type="${inputType}"][name="${signalName}"]`),
+      listener: new Map()
+    };
+
+    const startListener = () => { domListener.dragging = true; };
+    const endListener = () => {
+      if(!domListener.dragging) {
+        return;
+      }
+      this.signalHandler(signalName, domListener.elem.property('value'));
+      domListener.dragging = false;
+    };
+
+    const listener: [string, () => void][] = [
+      ['mousedown', startListener],
+      ['mouseup', endListener],
+      ['touchstart', startListener],
+      ['touchend', endListener]
+    ];
+
+    listener.forEach((d) => {
+      domListener.listener.set(d[0], d[1]);
+      domListener.elem.on(d[0], d[1]);
+    });
+
+    this.rangeDOMListener = [...this.rangeDOMListener, domListener];
+  }
+
+  private removeRangeDOMListener() {
+    this.rangeDOMListener.forEach((d) => {
+      const listener = Array.from(d.listener.entries());
+      listener.forEach((e) => {
+        d.elem.on(e[0], null);
+      });
+    });
+
   }
 }
