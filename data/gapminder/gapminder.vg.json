@@ -91,7 +91,9 @@
           {"data": "selectedCountries", "as": "allCountries"},
           {"signal": "clicked", "as": "lastCountry"}
         ],
-        "title": "Selected {{lastCountry.country}} ({{allCountries.length}} Countries)"
+        "title": "Selected {{lastCountry.country}} ({{allCountries.length}} Countries)",
+        "category": "selection",
+        "operation": "update"
       }
     },
     {
@@ -102,7 +104,9 @@
       ],
       "track": {
         "async": [],
-        "title": "No Countries Selected"
+        "title": "No Countries Selected",
+        "category": "selection",
+        "operation": "update"
       }
     },
     {
@@ -132,7 +136,9 @@
       "value": "fertility",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]},
       "track": {
-        "title": "X = {{value}}"
+        "title": "X = {{value}}",
+        "category": "data",
+        "operation": "update"
       }
     },
     {
@@ -140,7 +146,9 @@
       "value": "life_expect",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]},
       "track": {
-        "title": "Y = {{value}}"
+        "title": "Y = {{value}}",
+        "category": "data",
+        "operation": "update"
       }
     },
     {
@@ -148,7 +156,9 @@
       "value": "population",
       "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]},
       "track": {
-        "title": "Size = {{value}}"
+        "title": "Size = {{value}}",
+        "category": "data",
+        "operation": "update"
       }
     },
     {
@@ -156,7 +166,9 @@
       "value": "continent",
       "bind": {"input": "select", "options": ["continent", "main_religion"]},
       "track": {
-        "title": "Color = {{value}}"
+        "title": "Color = {{value}}",
+        "category": "data",
+        "operation": "update"
       }
     }
   ],

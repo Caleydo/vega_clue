@@ -2,6 +2,26 @@ import {cat, IObjectRef, meta, action, op, ActionNode} from 'phovea_core/src/pro
 import {VegaView} from './VegaView';
 import {lastOnly} from 'phovea_clue/src/compress';
 
+
+export interface ISetStateMetadata {
+  /**
+   * Title of the graph node
+   */
+  name: string,
+
+  /**
+   * Category of this signal
+   * @see 'phovea_core/src/provenance/ObjectNode.ts'
+   */
+  category: 'data' | 'selection' | 'visual' | 'layout' | 'logic' | 'custom' | 'annotation';
+
+  /**
+   * Operations of this signal
+   * @see 'phovea_core/src/provenance/ObjectNode.ts'
+   */
+  operation: 'create' | 'update' | 'remove';
+}
+
 export const CMD_SET_STATE = 'vegaSetState';
 
 export async function setStateImpl(inputs: IObjectRef<any>[], parameter: any) {
@@ -12,8 +32,8 @@ export async function setStateImpl(inputs: IObjectRef<any>[], parameter: any) {
   };
 }
 
-export function setState(view: IObjectRef<VegaView>, name: string, state: any) {
-  return action(meta(name, cat.visual, op.update), CMD_SET_STATE, setStateImpl, [view], {
+export function setState(view: IObjectRef<VegaView>, metadata: ISetStateMetadata, state: any) {
+  return action(meta(metadata.name, metadata.category, metadata.operation), CMD_SET_STATE, setStateImpl, [view], {
     name,
     state
   });

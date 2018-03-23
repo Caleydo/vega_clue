@@ -6,7 +6,7 @@ import * as handlebars from 'handlebars/dist/handlebars';
 import * as d3 from 'd3';
 import * as vega from 'vega-lib';
 import {Spec, View, BindRange} from 'vega-lib';
-import {setState} from './cmds';
+import {ISetStateMetadata, setState} from './cmds';
 import {ClueSignal, IAsyncData, IAsyncSignal} from './spec';
 
 
@@ -65,15 +65,23 @@ export class VegaView implements IView<VegaView> {
           });
 
         const template = handlebars.compile(signalSpec.track.title);
-        const title = template(context);
-        this.pushNewGraphNode(title, vegaView.getState());
+        const metadata: ISetStateMetadata = {
+          name: template(context),
+          category: signalSpec.track.category || 'data',
+          operation: signalSpec.track.operation || 'update'
+        };
+        this.pushNewGraphNode(metadata, vegaView.getState());
       });
 
     } else {
       const rawTitle = (signalSpec.track.title) ? signalSpec.track.title : `{{name}} = {{value}}`;
       const template = handlebars.compile(rawTitle);
-      const title = template(context);
-      this.pushNewGraphNode(title, vegaView.getState());
+      const metadata: ISetStateMetadata = {
+        name: template(context),
+        category: signalSpec.track.category || 'data',
+        operation: signalSpec.track.operation || 'update'
+      };
+      this.pushNewGraphNode(metadata, vegaView.getState());
     }
   }
 
@@ -120,12 +128,12 @@ export class VegaView implements IView<VegaView> {
     return bak;
   }
 
-  private pushNewGraphNode(title: string, state: any) {
+  private pushNewGraphNode(metadata: ISetStateMetadata, state: any) {
     // capture vega state and add to history
     const bak = this.currentState;
     this.currentState = state;
-    this.graph.pushWithResult(setState(this.ref, title, state), {
-      inverse: setState(this.ref, title, bak)
+    this.graph.pushWithResult(setState(this.ref, metadata, state), {
+      inverse: setState(this.ref, metadata, bak)
     });
   }
 

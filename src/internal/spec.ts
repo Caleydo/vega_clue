@@ -30,6 +30,20 @@ export interface ITrackedSignal {
    */
   async?: TrackedSignalAsync[];
 
+  /**
+   * Category of this signal
+   *
+   * Default value: `data`
+   */
+  category?: 'data' | 'selection' | 'visual' | 'layout' | 'logic' | 'custom' | 'annotation';
+
+  /**
+   * Operations of this signal
+   *
+   * Default value: `update`
+   */
+  operation?: 'create' | 'update' | 'remove';
+
 }
 
 interface IBaseAsync {
