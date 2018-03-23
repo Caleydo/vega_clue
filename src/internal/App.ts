@@ -11,7 +11,7 @@ import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
 import {IProperty, IPropertyValue} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
 import {IView} from '../AppWrapper';
-import vegaSpecs, {IVegaSpecDataset} from '../../data';
+import {IVegaSpecDataset, loadDatasets} from '../../data';
 import {VegaView} from './VegaView';
 import {Spec} from 'vega-lib';
 import * as vega from 'vega-lib';
@@ -49,6 +49,28 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
    * @returns {Promise<App>}
    */
   init(): Promise<App> {
+    return loadDatasets()
+      .then((vegaSpecs: IVegaSpecDataset[]) => {
+        this.initImpl(vegaSpecs);
+        return this;
+      });
+  }
+
+  private initImpl(vegaSpecs: IVegaSpecDataset[]) {
+    const datasets: IVegaSpecDataset[] = vegaSpecs.map((dataset: IVegaSpecDataset) => {
+      if (dataset.spec.data) {
+        dataset.spec = this.transformToAbsoluteUrls(dataset.spec, this.vegaDatasetUrl);
+      }
+      return dataset;
+    });
+
+    // handle case if only gapminder dataset is available
+    if(vegaSpecs.length === 1) {
+      this.$node.html(`<div class="view-wrapper"></div>`);
+      return this.openVegaView(datasets[0].spec)
+        .then(() => this);
+    }
+
     this.$node.html(`
       <form class="dataset-selector form-inline" action="#">
         <div class="form-group">
@@ -92,13 +114,6 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
     const $select = this.$node.select('.dataset-selector select');
 
-    const datasets: IVegaSpecDataset[] = vegaSpecs.map((dataset: IVegaSpecDataset) => {
-      if (dataset.spec.data) {
-        dataset.spec = this.transformToAbsoluteUrls(dataset.spec, this.vegaDatasetUrl);
-      }
-      return dataset;
-    });
-
     const nested_data = d3.nest()
       .key((d: IVegaSpecDataset) => d.category)
       .entries(datasets);
@@ -133,9 +148,6 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
       return this.openVegaView(datasets[0].spec)
         .then(() => this);
     }
-
-    this.$node.html('No available Vega Specs loaded');
-    return Promise.resolve(this);
   }
 
   private validateVegaData(spec: Spec) {

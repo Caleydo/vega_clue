@@ -73,12 +73,12 @@ export class VegaView implements IView<VegaView> {
       .append('div')
       .classed('vega-view', true)
       .html(`
-        <div class="side-panel">
+        <!--<div class="side-panel">
           <button class="btn btn-default btn-undo"><i class="fa fa-undo"></i> Undo</button>
           <button class="btn btn-default btn-redo"><i class="fa fa-repeat"></i> Redo</button>
           <hr>
           <form class="signal-selector"><p><strong>List of signals</strong></p></form>
-        </div>
+        </div>-->
         <div class="vega-wrapper"></div>
       `);
   }
@@ -89,7 +89,7 @@ export class VegaView implements IView<VegaView> {
     // set default values for signals -- default: true
     //this.spec.signals.forEach((d) => this.activeSignals.set(d.name, this.shouldSignalBeActive(d)));
 
-    this.initSelector('.signal-selector', this.spec.signals, this.activeSignals);
+    //this.initSelector('.signal-selector', this.spec.signals, this.activeSignals);
 
     const vegaView: View = new View(vega.parse(this.spec))
       //.logLevel(vega.Warn) // set view logging level
@@ -106,7 +106,7 @@ export class VegaView implements IView<VegaView> {
     vegaView.run(); // run after defining the promise
     this.$node.datum(vegaView);
 
-    this.$node.select('.btn-undo')
+    /*this.$node.select('.btn-undo')
       .on('click', () => {
         this.graph.undo();
       });
@@ -118,7 +118,7 @@ export class VegaView implements IView<VegaView> {
         if (next) {
           this.graph.jumpTo(next);
         }
-      });
+      });*/
 
     return vegaViewReady.then(() => this);
   }

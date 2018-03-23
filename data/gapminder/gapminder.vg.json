@@ -1,0 +1,242 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v3.json",
+  "width": 800,
+  "height": 600,
+  "padding": 5,
+
+  "data": [
+    {
+      "name": "gapminder",
+      "values": []
+    },
+    {
+      "name": "thisYear",
+      "source": "gapminder",
+      "transform": [
+        {"type": "filter", "expr": "datum.year == currentYear"}
+      ]
+    },
+    {
+      "name": "continents",
+      "source": "gapminder",
+      "transform": [
+        {"type": "aggregate", "groupby": ["continent"]}
+      ]
+    },
+    {
+      "name": "mainReligions",
+      "source": "gapminder",
+      "transform": [
+        {"type": "aggregate", "groupby": ["main_religion"]}
+      ]
+    },
+    {
+      "name": "countries",
+      "source": "gapminder",
+      "transform": [
+        {"type": "aggregate", "groupby": ["country"]}
+      ]
+    },
+    {
+      "name": "filteredCountries",
+      "source": "countries",
+      "transform": [
+        {
+          "type": "lookup",
+          "from": "thisYear", "key": "country",
+          "fields": ["country"], "as": ["this"],
+          "default": {}
+        },
+        {
+          "type": "formula",
+          "as": "x",
+          "expr": "datum.this[xField]"
+        },
+        {
+          "type": "formula",
+          "as": "y",
+          "expr": "datum.this[yField]"
+        },
+        {
+          "type": "formula",
+          "as": "size",
+          "expr": "datum.this[sizeField]"
+        },
+        {
+          "type": "formula",
+          "as": "color",
+          "expr": "datum.this[colorField]"
+        }
+      ]
+    },
+    {
+      "name": "trackCountries",
+      "on": [
+        {"trigger": "active", "toggle": "{country: active.country}"}
+      ]
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "active",
+      "value": {},
+      "on": [
+        {"events": "@point:mousedown, @point:touchstart", "update": "datum"},
+        {"events": "window:mouseup, window:touchend", "update": "{}"}
+      ]
+    },
+    {
+      "name": "currentYear",
+      "value": 1980,
+      "on":[{
+        "events": "mousemove, touchmove",
+        "update": "currentYear"
+      }],
+      "bind": {"input": "range", "min": 1800, "max": 2015, "step": 1}
+    },
+    {
+      "name": "xField",
+      "value": "fertility",
+      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
+    },
+    {
+      "name": "yField",
+      "value": "life_expect",
+      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
+    },
+    {
+      "name": "sizeField",
+      "value": "population",
+      "bind": {"input": "select", "options": ["gdp", "child_mortality", "fertility", "life_expect", "population"]}
+    },
+    {
+      "name": "colorField",
+      "value": "continent",
+      "bind": {"input": "select", "options": ["continent", "main_religion"]}
+    }
+  ],
+
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear", "nice": true,
+      "domain": {"data": "gapminder", "field": {"signal": "xField"}},
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "type": "linear", "nice": true, "zero": false,
+      "domain": {"data": "gapminder", "field": {"signal": "yField"}},
+      "range": "height"
+    },
+    {
+      "name": "size",
+      "type": "linear", "nice": true, "zero": false,
+      "domain": {"data": "gapminder", "field": {"signal": "sizeField"}},
+      "range": [40, 6400]
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": {"data": "gapminder", "field": {"signal": "colorField"}},
+      "range": "category"
+    }
+  ],
+
+  "axes": [
+    {
+      "title": {"signal": "xField"},
+      "orient": "bottom", "scale": "x",
+      "grid": true, "tickCount": 5
+    },
+    {
+      "title": {"signal": "yField"},
+      "orient": "left", "scale": "y",
+      "grid": true, "tickCount": 5
+    }
+  ],
+
+  "legends": [
+    {
+      "fill": "color",
+      "title": {"signal": "colorField"},
+      "orient": "right",
+      "encode": {
+        "symbols": {
+          "enter": {
+            "fillOpacity": {"value": 0.5}
+          }
+        },
+        "labels": {
+          "update": {
+            "text": {"field": "value"}
+          }
+        }
+      }
+    }
+  ],
+
+  "marks": [
+    {
+      "type": "text",
+      "encode": {
+        "update": {
+          "text": {"signal": "currentYear"},
+          "x": {"value": 230},
+          "y": {"value": 300},
+          "fill": {"value": "grey"},
+          "fillOpacity": {"value": 0.20},
+          "fontSize": {"value": 150},
+          "fontWeight": {"value": "bold"}
+        }
+      }
+    },
+    {
+      "name": "point",
+      "type": "symbol",
+      "from": {"data": "filteredCountries"},
+      "encode": {
+        "update": {
+          "fill": {"scale": "color", "field": "color"},
+          "x": {"scale": "x", "field": "x"},
+          "y": {"scale": "y", "field": "y"},
+          "size": {"scale": "size", "field": "size"},
+          "fillOpacity": [
+            {
+              "test": "indata('trackCountries', 'country', datum.country)",
+              "value": 1
+            },
+            {"value": 0.5}
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "filteredCountries"},
+      "interactive": false,
+      "encode": {
+        "enter": {
+          "fill": {"value": "#333"},
+          "fontSize": {"value": 14},
+          "fontWeight": {"value": "bold"},
+          "text": {"field": "country"},
+          "align": {"value": "center"},
+          "baseline": {"value": "bottom"}
+        },
+        "update": {
+          "x": {"scale": "x", "field": "x"},
+          "y": {"scale": "y", "field": "y", "offset": -7},
+          "fillOpacity": [
+            {
+              "test": "indata('trackCountries', 'country', datum.country)",
+              "value": 0.8
+            },
+            {"value": 0}
+          ]
+        }
+      }
+    }
+  ]
+}
