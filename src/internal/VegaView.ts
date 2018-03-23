@@ -31,7 +31,13 @@ export class VegaView implements IView<VegaView> {
   readonly ref: IObjectRef<VegaView>;
   private currentState: any = null;
 
+  private blockSignalHandler: boolean = false;
+
   private signalHandler = (name, value) => {
+    if(this.blockSignalHandler) {
+      return;
+    }
+
     // cast to <any>, because `getState()` is missing in 'vega-typings'
     const vegaView = (<any>this.$node.datum());
     const signalSpec: ClueSignal = <ClueSignal>this.spec.signals.find((d) => d.name === name)!;
@@ -93,7 +99,12 @@ export class VegaView implements IView<VegaView> {
     const vegaView = <any>this.$node.datum();
     const bak = this.currentState;
     this.currentState = state;
+
+    // prevent adding the provenance graph node twice
+    this.blockSignalHandler = true;
     vegaView.setState(state);
+    this.blockSignalHandler = false;
+
     return bak;
   }
 
