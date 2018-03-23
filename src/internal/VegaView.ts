@@ -48,6 +48,16 @@ export class VegaView implements IView<VegaView> {
     const signalSpec: ClueSignal = <ClueSignal>this.spec.signals.find((d) => d.name === name)!;
     const context = {name, value};
 
+    function createMetadata(): ISetStateMetadata {
+      const rawTitle = (signalSpec.track.title) ? signalSpec.track.title : `{{name}} = {{value}}`;
+      const template = handlebars.compile(rawTitle);
+      return {
+        name: template(context),
+        category: signalSpec.track.category || 'data',
+        operation: signalSpec.track.operation || 'update'
+      };
+    }
+
     if(signalSpec.track.async) {
       vegaView.runAsync().then((view) => {
         const async = signalSpec.track.async;
@@ -64,24 +74,11 @@ export class VegaView implements IView<VegaView> {
             context[key] = view.data(d.data);
           });
 
-        const template = handlebars.compile(signalSpec.track.title);
-        const metadata: ISetStateMetadata = {
-          name: template(context),
-          category: signalSpec.track.category || 'data',
-          operation: signalSpec.track.operation || 'update'
-        };
-        this.pushNewGraphNode(metadata, vegaView.getState());
+        this.pushNewGraphNode(createMetadata(), vegaView.getState());
       });
 
     } else {
-      const rawTitle = (signalSpec.track.title) ? signalSpec.track.title : `{{name}} = {{value}}`;
-      const template = handlebars.compile(rawTitle);
-      const metadata: ISetStateMetadata = {
-        name: template(context),
-        category: signalSpec.track.category || 'data',
-        operation: signalSpec.track.operation || 'update'
-      };
-      this.pushNewGraphNode(metadata, vegaView.getState());
+      this.pushNewGraphNode(createMetadata(), vegaView.getState());
     }
   }
 
