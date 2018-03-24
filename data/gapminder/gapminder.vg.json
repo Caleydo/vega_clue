@@ -170,6 +170,90 @@
         "category": "data",
         "operation": "update"
       }
+    },
+    {
+      "name": "update_statistics",
+      "description": "Collect all variables that could change and trigger an update for the statistic values",
+      "on": [
+        {"events": {"signal": "clicked"}, "update": "null", "force": true},
+        {"events": {"signal": "clear"}, "update": "null", "force": true},
+        {"events": {"signal": "currentYear"}, "update": "null", "force": true},
+        {"events": {"signal": "xField"}, "update": "null", "force": true},
+        {"events": {"signal": "yField"}, "update": "null", "force": true},
+        {"events": {"signal": "sizeField"}, "update": "null", "force": true},
+        {"events": {"signal": "colorField"}, "update": "null", "force": true}
+      ]
+    },
+    {
+      "name": "outlying",
+      "description": "Statistics needs to be implemented. Random value as proof of concept.",
+      "value": 0,
+      "on": [
+        {"events": {"signal": "update_statistics"}, "update": "random()"}
+      ]
+    },
+    {
+      "name": "skewed",
+      "description": "Statistics needs to be implemented. Random value as proof of concept.",
+      "value": 0,
+      "on": [
+        {"events": {"signal": "update_statistics"}, "update": "random()"}
+      ]
+    },
+    {
+      "name": "clumpy",
+      "description": "Statistics needs to be implemented. Random value as proof of concept.",
+      "value": 0,
+      "on": [
+        {"events": {"signal": "update_statistics"}, "update": "random()"}
+      ]
+    },
+    {
+      "name": "sparse",
+      "description": "Statistics needs to be implemented. Random value as proof of concept.",
+      "value": 0,
+      "on": [
+        {"events": {"signal": "update_statistics"}, "update": "random()"}
+      ]
+    },
+    {
+      "name": "striated",
+      "description": "Statistics needs to be implemented. Random value as proof of concept.",
+      "value": 0,
+      "on": [
+        {"events": {"signal": "update_statistics"}, "update": "random()"}
+      ]
+    },
+    {
+      "name": "convex",
+      "description": "Statistics needs to be implemented. Random value as proof of concept.",
+      "value": 0,
+      "on": [
+        {"events": {"signal": "update_statistics"}, "update": "random()"}
+      ]
+    },
+    {
+      "name": "skinny",
+      "description": "Statistics needs to be implemented. Random value as proof of concept.",
+      "value": 0,
+      "on": [
+        {"events": {"signal": "update_statistics"}, "update": "random()"}
+      ]
+    },
+    {
+      "name": "stringy",
+      "description": "Statistics needs to be implemented. Random value as proof of concept.",
+      "on": [
+        {"events": {"signal": "update_statistics"}, "update": "random()"}
+      ]
+    },
+    {
+      "name": "monotonic",
+      "description": "Statistics needs to be implemented. Random value as proof of concept.",
+      "value": 0,
+      "on": [
+        {"events": {"signal": "update_statistics"}, "update": "random()"}
+      ]
     }
   ],
 
