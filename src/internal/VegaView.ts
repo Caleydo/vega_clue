@@ -13,6 +13,7 @@ import {
   createPropertyValue, IProperty,
   IPropertyValue, Property, PropertyType
 } from 'phovea_core/src/provenance/retrieval/VisStateProperty';
+import {setProperty} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
 
 
 interface IVegaViewOptions {
@@ -185,7 +186,6 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
     // capture vega state and add to history
     const bak = this.currentState;
     this.currentState = state;
-    console.log(metadata, state);
     this.graph.pushWithResult(setState(this.ref, metadata, state), {
       inverse: setState(this.ref, metadata, bak)
     });
@@ -207,6 +207,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
       return Promise.resolve([]);
     }
 
+    const vegaView = this.$node.datum();
     const propertyValues = this.getPropertyValuesFromGraph(this.graph);
     const groups: {group: string, type: string}[] = this.getGroupsFromVegaSpec(this.spec, this.currentState);
 
@@ -237,7 +238,44 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
     })
     .filter((s) => s); // filter undefined values
 
-    return Promise.resolve(properties);
+    const fill = [...this.spec.signals, ...this.spec.data]
+      .filter((s: ClueSignal) => s.search && s.search.fill);
+
+    const fillSource = fill
+      .filter((s: ClueSignal) => s.search.type === 'set' && s.search.fill.source)
+      .map((s: ClueSignal) => {
+        const rawTitle = (s.search.title) ? s.search.title : `{{name}}_{{index}}`;
+        const template = handlebars.compile(rawTitle);
+        const values = vegaView.data(s.search.fill.source)
+          .map((d, i) => {
+            const context = {name: s.name, datum: d, index: i};
+            const title = template(context);
+            return {id: title, text: title};
+          });
+        const group = this.resolveSignalReference(s.search.group, this.currentState);
+        return setProperty(group, values); // property of type SET
+      });
+
+    /*const fillRange = fill
+      .filter((s: ClueSignal) => s.search.fill.range)
+      .map((s: ClueSignal) => );*/
+
+    /*
+        const countries = setProperty('Selected Countries', this.items.map((d) => {
+          return {id: String(d.id), text: d.name};
+        }));
+
+        const years = numericalProperty('Selected Year', this.timeIds.ids.map((id, i) => {
+          return {id: `${this.timeIds.idtype.id} ${TAG_VALUE_SEPARATOR} ${id}`, text: this.timeIds.names[i], payload: {numVal: this.timeIds.names[i]}};
+        }));
+    */
+
+    //console.log(properties, fill, fillSource);
+
+    return Promise.resolve([
+      //...fillSource,
+      ...properties
+    ]);
   }
 
   /**
@@ -268,16 +306,13 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    */
   private getGroupsFromVegaSpec(spec: Spec, currentState: any): {group: string, type: string}[]  {
     return [...spec.signals, ...spec.data]
+      .filter((s: ClueSignal) => s.search && s.search.group)
       .map((s: ClueSignal) => {
-        if(s.search && s.search.group) {
-          return {
-            group: this.resolveSignalReference(s.search.group, this.currentState),
-            type: s.search.type
-          };
-        }
-        return undefined;
-      })
-      .filter((s) => s); // filter undefined values
+        return {
+          group: this.resolveSignalReference(s.search.group, this.currentState),
+          type: s.search.type
+        };
+      });
   }
 
   /**

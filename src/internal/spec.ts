@@ -119,6 +119,11 @@ interface ISearchProv {
    */
   group: ISearchProvGroup | string;
 
+  /**
+   * Fill the search suggestions with more (disabled) options as preview
+   */
+  fill: ISearchProvFill;
+
 }
 
 export interface ISearchProvGroup {
@@ -128,6 +133,36 @@ export interface ISearchProvGroup {
   signal: string;
 }
 
+export interface ISearchProvFill {
+  /**
+   * Reference to another valid dataset to create search suggestions from an array.
+   * Note: Works only for type `set`
+   */
+  source?: string;
+
+  /**
+   * Create create search suggestions from a range.
+   * Note: Works only for type `numbe`
+   */
+  range?: ISearchProvFillRange;
+}
+
+export interface ISearchProvFillRange {
+  /**
+   * Minimum value
+   */
+  min: number;
+
+  /**
+   * Maximum value
+   */
+  max: number;
+
+  /**
+   * Step size
+   */
+  step: number;
+}
 
 /**
  * Extend the Vega Data specification about search

@@ -80,7 +80,8 @@
       "search": {
         "type": "set",
         "title": "{{datum.country}}",
-        "group": {"signal": "groupLabelCountries"}
+        "group": {"signal": "groupLabelCountries"},
+        "fill": {"source": "countries"}
       }
     }
   ],
@@ -138,7 +139,10 @@
       "search": {
         "type": "number",
         "title": "{{value}}",
-        "group": {"signal": "groupLabelYear"}
+        "group": {"signal": "groupLabelYear"},
+        "fill": {
+          "range": {"min": 1800, "max": 2015, "step": 1}
+        }
       }
     },
     {
