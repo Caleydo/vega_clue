@@ -297,7 +297,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
      * @param {ClueSignal | ClueData} input
      * @param current
      */
-    function prepareInput(input: any, current: any) {
+    const prepareInput = (input: any, current: any) => {
       return input
         .filter((d: ClueSignal | ClueData) => d.search)
         .map((d) => Object.assign({}, d)) // shallow copy object
