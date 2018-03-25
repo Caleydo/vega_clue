@@ -147,6 +147,16 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
   }
 
   /**
+   * Remove event listener and the view itself
+   */
+  remove() {
+    const vegaView = this.$node.datum();
+    this.removeSignalListener(vegaView, this.spec);
+    vegaView.finalize();
+    this.$node.remove();
+  }
+
+  /**
    * Apply a given state to the current Vega view.
    *
    * @param state New state that will be applied to the Vega view
@@ -182,16 +192,6 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
   }
 
   /**
-   * Remove event listener and the view itself
-   */
-  remove() {
-    const vegaView = this.$node.datum();
-    this.removeSignalListener(vegaView, this.spec);
-    vegaView.finalize();
-    this.$node.remove();
-  }
-
-  /**
    * Get all properties (i.e., groups) with the corresponding values
    * that should be available for retrieval.
    *
@@ -203,7 +203,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    */
   getVisStateProps(): Promise<IProperty[]> {
     if(!this.currentState) {
-      console.warn('No current Vega state available; returning an empty property list.')
+      console.warn('No current Vega state available; returning an empty property list.');
       return Promise.resolve([]);
     }
 
@@ -288,7 +288,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    */
   getCurrVisState(): Promise<IPropertyValue[]> {
     if(!this.currentState) {
-      console.warn('No current Vega state available; returning an empty property list.')
+      console.warn('No current Vega state available; returning an empty property list.');
       return Promise.resolve([]);
     }
 
