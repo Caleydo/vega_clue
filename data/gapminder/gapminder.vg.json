@@ -76,7 +76,12 @@
         {"trigger": "!shift", "remove": true},
         {"trigger": "!shift && clicked", "insert": "clicked"},
         {"trigger": "shift && clicked", "toggle": "clicked"}
-      ]
+      ],
+      "search": {
+        "type": "set",
+        "title": "{{datum.country}}",
+        "group": {"signal": "groupLabelCountries"}
+      }
     }
   ],
 
@@ -129,6 +134,11 @@
       "bind": {"input": "range", "min": 1800, "max": 2015, "step": 1},
       "track": {
         "title": "Selected Year {{value}}"
+      },
+      "search": {
+        "type": "number",
+        "title": "{{value}}",
+        "group": {"signal": "groupLabelYear"}
       }
     },
     {
@@ -139,6 +149,11 @@
         "title": "X = {{value}}",
         "category": "data",
         "operation": "update"
+      },
+      "search": {
+        "type": "category",
+        "title": "{{value}}",
+        "group": {"signal": "groupLabelAttributes"}
       }
     },
     {
@@ -149,6 +164,11 @@
         "title": "Y = {{value}}",
         "category": "data",
         "operation": "update"
+      },
+      "search": {
+        "type": "category",
+        "title": "{{value}}",
+        "group": {"signal": "groupLabelAttributes"}
       }
     },
     {
@@ -159,6 +179,11 @@
         "title": "Size = {{value}}",
         "category": "data",
         "operation": "update"
+      },
+      "search": {
+        "type": "category",
+        "title": "{{value}}",
+        "group": {"signal": "groupLabelAttributes"}
       }
     },
     {
@@ -169,10 +194,15 @@
         "title": "Color = {{value}}",
         "category": "data",
         "operation": "update"
+      },
+      "search": {
+        "type": "category",
+        "title": "{{value}}",
+        "group": {"signal": "groupLabelAttributes"}
       }
     },
     {
-      "name": "update_statistics",
+      "name": "updateStatistics",
       "description": "Collect all variables that could change and trigger an update for the statistic values",
       "on": [
         {"events": {"signal": "clicked"}, "update": "null", "force": true},
@@ -189,71 +219,132 @@
       "description": "Statistics needs to be implemented. Random value as proof of concept.",
       "value": 0,
       "on": [
-        {"events": {"signal": "update_statistics"}, "update": "random()"}
-      ]
+        {"events": {"signal": "updateStatistics"}, "update": "random()"}
+      ],
+      "search": {
+        "type": "number",
+        "title": "{{name}} = {{round value 2}}",
+        "group": {"signal": "groupLabelStatistics"}
+      }
     },
     {
       "name": "skewed",
       "description": "Statistics needs to be implemented. Random value as proof of concept.",
       "value": 0,
       "on": [
-        {"events": {"signal": "update_statistics"}, "update": "random()"}
-      ]
+        {"events": {"signal": "updateStatistics"}, "update": "random()"}
+      ],
+      "search": {
+        "type": "number",
+        "title": "{{name}} = {{round value 2}}",
+        "group": {"signal": "groupLabelStatistics"}
+      }
     },
     {
       "name": "clumpy",
       "description": "Statistics needs to be implemented. Random value as proof of concept.",
       "value": 0,
       "on": [
-        {"events": {"signal": "update_statistics"}, "update": "random()"}
-      ]
+        {"events": {"signal": "updateStatistics"}, "update": "random()"}
+      ],
+      "search": {
+        "type": "number",
+        "title": "{{name}} = {{round value 2}}",
+        "group": {"signal": "groupLabelStatistics"}
+      }
     },
     {
       "name": "sparse",
       "description": "Statistics needs to be implemented. Random value as proof of concept.",
       "value": 0,
       "on": [
-        {"events": {"signal": "update_statistics"}, "update": "random()"}
-      ]
+        {"events": {"signal": "updateStatistics"}, "update": "random()"}
+      ],
+      "search": {
+        "type": "number",
+        "title": "{{name}} = {{round value 2}}",
+        "group": {"signal": "groupLabelStatistics"}
+      }
     },
     {
       "name": "striated",
       "description": "Statistics needs to be implemented. Random value as proof of concept.",
       "value": 0,
       "on": [
-        {"events": {"signal": "update_statistics"}, "update": "random()"}
-      ]
+        {"events": {"signal": "updateStatistics"}, "update": "random()"}
+      ],
+      "search": {
+        "type": "number",
+        "title": "{{name}} = {{round value 2}}",
+        "group": {"signal": "groupLabelStatistics"}
+      }
     },
     {
       "name": "convex",
       "description": "Statistics needs to be implemented. Random value as proof of concept.",
       "value": 0,
       "on": [
-        {"events": {"signal": "update_statistics"}, "update": "random()"}
-      ]
+        {"events": {"signal": "updateStatistics"}, "update": "random()"}
+      ],
+      "search": {
+        "type": "number",
+        "title": "{{name}} = {{round value 2}}",
+        "group": {"signal": "groupLabelStatistics"}
+      }
     },
     {
       "name": "skinny",
       "description": "Statistics needs to be implemented. Random value as proof of concept.",
       "value": 0,
       "on": [
-        {"events": {"signal": "update_statistics"}, "update": "random()"}
-      ]
+        {"events": {"signal": "updateStatistics"}, "update": "random()"}
+      ],
+      "search": {
+        "type": "number",
+        "title": "{{name}} = {{round value 2}}",
+        "group": {"signal": "groupLabelStatistics"}
+      }
     },
     {
       "name": "stringy",
       "description": "Statistics needs to be implemented. Random value as proof of concept.",
       "on": [
-        {"events": {"signal": "update_statistics"}, "update": "random()"}
-      ]
+        {"events": {"signal": "updateStatistics"}, "update": "random()"}
+      ],
+      "search": {
+        "type": "number",
+        "title": "{{name}} = {{round value 2}}",
+        "group": {"signal": "groupLabelStatistics"}
+      }
     },
     {
       "name": "monotonic",
       "description": "Statistics needs to be implemented. Random value as proof of concept.",
       "value": 0,
       "on": [
-        {"events": {"signal": "update_statistics"}, "update": "random()"}
-      ]
+        {"events": {"signal": "updateStatistics"}, "update": "random()"}
+      ],
+      "search": {
+        "type": "number",
+        "title": "{{name}} = {{round value 2}}",
+        "group": {"signal": "groupLabelStatistics"}
+      }
+    },
+    {
+      "name": "groupLabelStatistics",
+      "value": "Scatterplot Statistics"
+    },
+    {
+      "name": "groupLabelAttributes",
+      "value": "Attributes"
+    },
+    {
+      "name": "groupLabelCountries",
+      "value": "Selected Countries"
+    },
+    {
+      "name": "groupLabelYear",
+      "value": "Selected Year"
     }
   ],
 

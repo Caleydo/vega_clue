@@ -196,14 +196,11 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
   }
 
   getVisStateProps(): Promise<IProperty[]> {
-    return this.initCompletePromise
-      .then(() => {
-        return [];
-      });
+    return this.initCompletePromise.then(() => this.vegaView.getVisStateProps());
   }
 
   getCurrVisState(): Promise<IPropertyValue[]> {
-    return Promise.resolve([]);
+    return this.vegaView.getCurrVisState();
   }
 
   remove() {
