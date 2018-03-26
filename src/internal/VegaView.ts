@@ -209,7 +209,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
 
     const vegaView = this.$node.datum();
     const propertyValues = this.getPropertyValuesFromGraph(this.graph);
-    const groups: {group: string, type: string}[] = this.getGroupsFromVegaSpec(this.spec, this.currentState);
+    const groups: {group: string, type: string}[] = this.getGroupsFromVegaSpec(this.spec, vegaView);
 
     // create properties from groups
     const properties = groups.map((g) => {
@@ -241,7 +241,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
     const fill: ClueSignal[] = <ClueSignal[]>[...this.spec.signals, ...this.spec.data]
       .filter((s: ClueSignal) => s.search && s.search.fill);
     const fillSource = this.createFillPropertiesFromDataSource(fill, vegaView);
-    const fillRange = this.createFillPropertiesFromRanges(fill);
+    const fillRange = this.createFillPropertiesFromRanges(fill, vegaView);
 
     return Promise.resolve([
       ...properties,
@@ -274,15 +274,15 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    * with the values from the current state.
    *
    * @param {Spec} spec
-   * @param currentState
+   * @param vegaView
    * @returns {{group: string; type: string}[]}
    */
-  private getGroupsFromVegaSpec(spec: Spec, currentState: any): {group: string, type: string}[]  {
+  private getGroupsFromVegaSpec(spec: Spec, vegaView: View): {group: string, type: string}[]  {
     return [...spec.signals, ...spec.data]
       .filter((s: ClueSignal) => s.search && s.search.group)
       .map((s: ClueSignal) => {
         return {
-          group: this.resolveSignalReference(s.search.group, this.currentState),
+          group: this.resolveSignalReference(s.search.group, vegaView),
           type: s.search.type
         };
       });
@@ -300,7 +300,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
     return fill
       .filter((s: ClueSignal) => s.search.type === 'set' && s.search.fill.source)
       .map((s: ClueSignal) => {
-        const group = this.resolveSignalReference(s.search.group, this.currentState);
+        const group = this.resolveSignalReference(s.search.group, vegaView);
         const rawTitle = (s.search.title) ? s.search.title : `{{name}}_{{index}}`;
         const template = handlebars.compile(rawTitle);
         const values = vegaView.data(s.search.fill.source)
@@ -318,14 +318,15 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    * This function works only for `search.type = 'number'` and needs defined a valid range.
    *
    * @param {ClueSignal} fill
+   * @param vegaView
    * @returns {IProperty[]}
    */
-  private createFillPropertiesFromRanges(fill: ClueSignal[]): IProperty[] {
+  private createFillPropertiesFromRanges(fill: ClueSignal[], vegaView: View): IProperty[] {
     return fill
       .filter((s: ClueSignal) => s.search.type === 'number' && s.search.fill.range)
       .map((s: ClueSignal) => {
         const range = s.search.fill.range;
-        const group = this.resolveSignalReference(s.search.group, this.currentState);
+        const group = this.resolveSignalReference(s.search.group, vegaView);
         const rawTitle = (s.search.title) ? s.search.title : `{{value}}`;
         const template = handlebars.compile(rawTitle);
         const values = d3.range(range.min, range.max, range.step)
@@ -359,29 +360,32 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
       return Promise.resolve([]);
     }
 
+    const vegaView = this.$node.datum();
+
     /**
-     * Resolve signal references in the input data and set the values from the current state
+     * Resolve signal references in the input data and set the values from the current Vega view
      * @param {ClueSignal | ClueData} input
-     * @param current
+     * @param {View} vegaView
+     * @param {'signal'|'data'} source
      */
-    const prepareInput = (input: any, current: any) => {
+    const prepareInput = (input: any, vegaView: View, source: 'signal' | 'data') => {
       return input
         .filter((d: ClueSignal | ClueData) => d.search)
         .map((d) => Object.assign({}, d)) // shallow copy object
         .map((d: ClueSignal | ClueData) => {
           if(d.search && d.search.group) {
-            d.search.group = this.resolveSignalReference(d.search.group, this.currentState);
+            d.search.group = this.resolveSignalReference(d.search.group, vegaView);
           }
-          d.value = current[d.name];
+          d.value = (source === 'signal') ? vegaView.signal(d.name) : vegaView.data(d.name);
           return d;
         });
-    }
+    };
 
     let propertyValues: IPropertyValue[];
-    const signals = prepareInput(this.spec.signals, this.currentState.signals);
+    const signals = prepareInput(this.spec.signals, vegaView, 'signal');
     propertyValues = signals.map((s) => this.signalToPropertyValue(s));
 
-    prepareInput(this.spec.data, this.currentState.data)
+    prepareInput(this.spec.data, vegaView, 'data')
       .forEach((d) => {
         // add each element individually
         propertyValues = [...propertyValues, ...this.dataToPropertyValue(d)];
@@ -470,16 +474,16 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    * If a string instead of a signal reference is given, it will just return the string.
    *
    * @param {{signal: string} | string} specProperty
-   * @param currentState
+   * @param vegaView
    * @returns {{signal: string} | string}
    */
-  private resolveSignalReference(specProperty: {signal: string} | string, currentState: any): string {
+  private resolveSignalReference(specProperty: {signal: string} | string, vegaView: View): string {
     if(!specProperty) {
       return;
     }
 
     const signalRef: string = (<any>specProperty).signal;
-    return (signalRef) ? currentState.signals[signalRef] : specProperty;
+    return (signalRef) ? vegaView.signal(signalRef) : specProperty;
   }
 
   /**
