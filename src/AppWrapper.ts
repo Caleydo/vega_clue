@@ -116,10 +116,20 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
     this.app = graph.then((graph) => this.createApp(graph, clueManager, main));
 
     Promise.all([graph, this.app]).then((args) => {
-      createProvRetrievalPanel(args[0], body.querySelector('div.asides'), {
-        app: args[1],
+      const graph = args[0];
+      const app = args[1];
+
+      createProvRetrievalPanel(graph, body.querySelector('div.asides'), {
+        app,
         captureNonPersistedStates: false
       });
+
+      if (!graph.isEmpty) {
+        //just if no other option applies jump to the stored state
+        this.jumpToStoredOrLastState();
+      } else {
+        // TODO custom session init if needed
+      }
     });
 
     graphResolver(clueManager.chooseLazy(true));
@@ -138,8 +148,7 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
     // lazy loading for better module bundling
     return Promise.all([System.import('./internal/App')]).then((modules) => {
       const app: T = new modules[0].default(graph, manager, main);
-      app.init();
-      return app;
+      return app.init();
     });
   }
 }

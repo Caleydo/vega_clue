@@ -7,7 +7,7 @@ export interface ISetStateMetadata {
   /**
    * Title of the graph node
    */
-  name: string,
+  name: string;
 
   /**
    * Category of this signal
