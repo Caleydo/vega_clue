@@ -11,7 +11,7 @@ import {ClueData, ClueSignal, IAsyncData, IAsyncSignal} from './spec';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
 import {
   createPropertyValue, IProperty,
-  IPropertyValue, Property, PropertyType
+  IPropertyValue, numericalProperty, Property, PropertyType, TAG_VALUE_SEPARATOR
 } from 'phovea_core/src/provenance/retrieval/VisStateProperty';
 import {setProperty} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
 
@@ -238,43 +238,16 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
     })
     .filter((s) => s); // filter undefined values
 
-    const fill = [...this.spec.signals, ...this.spec.data]
+    const fill: ClueSignal[] = <ClueSignal[]>[...this.spec.signals, ...this.spec.data]
       .filter((s: ClueSignal) => s.search && s.search.fill);
-
-    const fillSource = fill
-      .filter((s: ClueSignal) => s.search.type === 'set' && s.search.fill.source)
-      .map((s: ClueSignal) => {
-        const rawTitle = (s.search.title) ? s.search.title : `{{name}}_{{index}}`;
-        const template = handlebars.compile(rawTitle);
-        const values = vegaView.data(s.search.fill.source)
-          .map((d, i) => {
-            const context = {name: s.name, datum: d, index: i};
-            const title = template(context);
-            return {id: title, text: title};
-          });
-        const group = this.resolveSignalReference(s.search.group, this.currentState);
-        return setProperty(group, values); // property of type SET
-      });
-
-    /*const fillRange = fill
-      .filter((s: ClueSignal) => s.search.fill.range)
-      .map((s: ClueSignal) => );*/
-
-    /*
-        const countries = setProperty('Selected Countries', this.items.map((d) => {
-          return {id: String(d.id), text: d.name};
-        }));
-
-        const years = numericalProperty('Selected Year', this.timeIds.ids.map((id, i) => {
-          return {id: `${this.timeIds.idtype.id} ${TAG_VALUE_SEPARATOR} ${id}`, text: this.timeIds.names[i], payload: {numVal: this.timeIds.names[i]}};
-        }));
-    */
-
-    //console.log(properties, fill, fillSource);
+    const fillSource = this.createFillPropertiesFromDataSource(fill, vegaView);
+    const fillRange = this.createFillPropertiesFromRanges(fill);
 
     return Promise.resolve([
-      //...fillSource,
-      ...properties
+      ...properties,
+      // add fill properties as last items
+      ...fillSource,
+      ...fillRange
     ]);
   }
 
@@ -312,6 +285,65 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
           group: this.resolveSignalReference(s.search.group, this.currentState),
           type: s.search.type
         };
+      });
+  }
+
+  /**
+   * Creates a property with multiple property values of a data source from the Vega view.
+   * This function works only for `search.type = 'set'` and needs a valid data reference.
+   *
+   * @param {ClueSignal} fill
+   * @param {View} vegaView
+   * @returns {IProperty[]}
+   */
+  private createFillPropertiesFromDataSource(fill: ClueSignal[], vegaView: View): IProperty[] {
+    return fill
+      .filter((s: ClueSignal) => s.search.type === 'set' && s.search.fill.source)
+      .map((s: ClueSignal) => {
+        const group = this.resolveSignalReference(s.search.group, this.currentState);
+        const rawTitle = (s.search.title) ? s.search.title : `{{name}}_{{index}}`;
+        const template = handlebars.compile(rawTitle);
+        const values = vegaView.data(s.search.fill.source)
+          .map((d, i) => {
+            const context = {name: s.name, datum: d, index: i};
+            const title = template(context);
+            return {id: title, text: title, group: group};
+          });
+        return setProperty(group, values); // property of type SET
+      });
+  }
+
+  /**
+   * Creates a property with multiple property values from a range between min/max and a certain step width.
+   * This function works only for `search.type = 'number'` and needs defined a valid range.
+   *
+   * @param {ClueSignal} fill
+   * @returns {IProperty[]}
+   */
+  private createFillPropertiesFromRanges(fill: ClueSignal[]): IProperty[] {
+    return fill
+      .filter((s: ClueSignal) => s.search.type === 'number' && s.search.fill.range)
+      .map((s: ClueSignal) => {
+        const range = s.search.fill.range;
+        const group = this.resolveSignalReference(s.search.group, this.currentState);
+        const rawTitle = (s.search.title) ? s.search.title : `{{value}}`;
+        const template = handlebars.compile(rawTitle);
+        const values = d3.range(range.min, range.max, range.step)
+          .map((d, i) => {
+            const context = {name: s.name, value: d, index: i};
+            const title = template(context);
+            return {
+              // Special case! Use title also id to make items distinguishable, because name is equal for all items
+              id: `${s.name} ${TAG_VALUE_SEPARATOR} ${title}`,
+              text: title,
+              group: group,
+              payload: {
+                numVal: title,
+                propText: group
+              }
+            };
+          });
+        return numericalProperty(group, values); // property of type NUMERICAL
       });
   }
 
@@ -419,7 +451,8 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
         const context = {name: data.name, datum: d, index: i};
         const title = template(context);
         return createPropertyValue(PropertyType.SET, {
-          id: title, // Special case! Use title also id to make items distinguishable, because name is equal for all items
+          // Special case! Use title also id to make items distinguishable, because name is equal for all items
+          id: `${data.name} ${TAG_VALUE_SEPARATOR} ${title}`,
           text: title,
           group: data.search.group
         });
