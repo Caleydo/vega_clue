@@ -31,6 +31,14 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
   private readonly vegaExampleUrl = 'https://vega.github.io/vega/examples/interactive-legend.vg.json';
   private readonly vegaDatasetUrl = 'https://vega.github.io/vega-datasets/';
 
+  /**
+   * Promise to wait for Vega view initialization, before calling `getVisStateProps()`
+   */
+  private initCompleteResolve;
+  private initCompletePromise: Promise<VegaView> = new Promise<VegaView>((resolve, reject) => {
+    this.initCompleteResolve = resolve;
+  });
+
   constructor(public readonly graph: ProvenanceGraph, public readonly graphManager: CLUEGraphManager, parent: HTMLElement) {
     super();
 
@@ -51,12 +59,16 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
   init(): Promise<App> {
     return loadDatasets()
       .then((vegaSpecs: IVegaSpecDataset[]) => {
-        this.initImpl(vegaSpecs);
-        return this;
-      });
+        if(vegaSpecs.length === 1) {
+          return this.initSingleSpec(vegaSpecs);
+        }
+        return this.initMultiSpecs(vegaSpecs);
+      })
+      .then((vegaView: VegaView) => this.initCompleteResolve(vegaView))
+      .then(() => this);
   }
 
-  private initImpl(vegaSpecs: IVegaSpecDataset[]) {
+  private initSingleSpec(vegaSpecs: IVegaSpecDataset[]): Promise<VegaView> {
     const datasets: IVegaSpecDataset[] = vegaSpecs.map((dataset: IVegaSpecDataset) => {
       if (dataset.spec.data) {
         dataset.spec = this.transformToAbsoluteUrls(dataset.spec, this.vegaDatasetUrl);
@@ -64,12 +76,17 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
       return dataset;
     });
 
-    // handle case if only gapminder dataset is available
-    if(vegaSpecs.length === 1) {
-      this.$node.html(`<div class="view-wrapper"></div>`);
-      return this.openVegaView(datasets[0].spec)
-        .then(() => this);
-    }
+    this.$node.html(`<div class="view-wrapper"></div>`);
+    return this.openVegaView(datasets[0].spec);
+  }
+
+  private initMultiSpecs(vegaSpecs: IVegaSpecDataset[]): Promise<VegaView> {
+    const datasets: IVegaSpecDataset[] = vegaSpecs.map((dataset: IVegaSpecDataset) => {
+      if (dataset.spec.data) {
+        dataset.spec = this.transformToAbsoluteUrls(dataset.spec, this.vegaDatasetUrl);
+      }
+      return dataset;
+    });
 
     this.$node.html(`
       <form class="dataset-selector form-inline" action="#">
@@ -145,8 +162,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
       });
 
     if (datasets.length > 0) {
-      return this.openVegaView(datasets[0].spec)
-        .then(() => this);
+      return this.openVegaView(datasets[0].spec);
     }
   }
 
@@ -180,11 +196,11 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
   }
 
   getVisStateProps(): Promise<IProperty[]> {
-    return Promise.resolve([]);
+    return this.initCompletePromise.then(() => this.vegaView.getVisStateProps());
   }
 
   getCurrVisState(): Promise<IPropertyValue[]> {
-    return Promise.resolve([]);
+    return this.vegaView.getCurrVisState();
   }
 
   remove() {
