@@ -66,6 +66,11 @@
           "type": "formula",
           "as": "color",
           "expr": "datum.this[colorField]"
+        },
+        {
+          "type": "formula",
+          "as": "map_id",
+          "expr": "datum.this.map_id"
         }
       ]
     },
@@ -97,10 +102,6 @@
       "transform": [
         { "type": "graticule" }
       ]
-    },
-    {
-      "name": "worldCountryNames",
-      "values": []
     }
   ],
 
@@ -109,6 +110,23 @@
     { "name": "gapminderHeight", "value": 200},
     { "name": "mapWidth", "value": 300},
     { "name": "mapHeight", "value": 200},
+
+    {
+      "name": "hoverMapCountry",
+      "value": {},
+      "on": [
+        {"events": "@mapCountry:mouseover", "update": "datum", "force": true},
+        {"events": "@mapCountry:mouseout", "update": "{}", "force": true}
+      ]
+    },
+    {
+      "name": "hoverGapminderCountry",
+      "value": {},
+      "on": [
+        {"events": "@point:mouseover", "update": "datum", "force": true},
+        {"events": "@point:mouseout", "update": "{}", "force": true}
+      ]
+    },
 
     {
       "name": "selectedCountries",
@@ -494,9 +512,13 @@
                   "test": "indata('selectedCountries', 'country', datum.country)",
                   "value": 1
                 },
+                {
+                  "test": "datum.map_id == hoverMapCountry.id",
+                  "value": 1
+                },
                 {"value": 0.5}
               ],
-              "tooltip": {"field": "country"}
+              "tooltip": {"signal": "datum.country + ' (' + datum.map_id + ')'"}
             },
             "hover": {
               "fillOpacity": [
@@ -582,12 +604,12 @@
               "stroke": {"value": "grey"},
               "fill": [
                 {
-                  "test": "indata('selectedCountries', 'country', datum.country)",
+                  "test": "datum.id == hoverGapminderCountry.map_id",
                   "value": "grey"
                 },
                 {"value": "lightgrey"}
               ],
-              "tooltip": {"field": "id"},
+              "tooltip": {"signal": "datum.id"},
               "zindex": {"value": 0}
             },
             "hover": {

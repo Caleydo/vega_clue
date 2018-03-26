@@ -94,18 +94,22 @@ const gapminderData = Promise.all([
   loadTsvData(csvFertility),
   loadTsvData(csvLifetimeExpectancy),
   loadTsvData(csvReligions),
-  loadTsvData(csvPopulation)
+  loadTsvData(csvPopulation),
+  loadTsvData(tsvWorldCountryNames)
 ]).then((csv) => {
-  const [country, gdp, childMortality, continent, fertility, lifetimeExpectancy, religions, population] = [...csv];
+  const [country, gdp, childMortality, continent, fertility, lifetimeExpectancy, religions, population, worldCountryNames] = [...csv];
   const data = [];
 
   country.forEach((d, i) => {
     gdp[i].forEach((e, j) => {
+      const countryName = worldCountryNames.filter((f) => f[1][1] == country[i][0][1])[0];
+      const mapId = (countryName) ? +countryName[0][1] : 0;
       const r = {
-        continent: continent[i][0][1],
-        main_religion: religions[i][0][1],
         country: country[i][0][1],
         year: +gdp[i][j][0],
+        map_id: +mapId,
+        continent: continent[i][0][1],
+        main_religion: religions[i][0][1],
         gdp: +gdp[i][j][1],
         child_mortality: +childMortality[i][j][1],
         fertility: +fertility[i][j][1],
@@ -117,17 +121,6 @@ const gapminderData = Promise.all([
   });
 
   return data;
-});
-
-const worldCountryNames = Promise.all([
-  loadTsvData(tsvWorldCountryNames)
-]).then((data) => {
-  return data[0].map((d) => {
-    return {
-      id: +d[0][1],
-      country: d[1][1]
-    };
-  });
 });
 
 export interface IVegaSpecDataset {
@@ -217,10 +210,9 @@ const vegaSpecs: IVegaSpecDataset[] = [
 ];
 
 export function loadDatasets(): Promise<IVegaSpecDataset[]> {
-  return Promise.all([gapminderData, worldCountryNames])
+  return gapminderData
     .then((data) => {
-      Gapminder.data.filter((d) => d.name === 'gapminder')[0].values = data[0];
-      Gapminder.data.filter((d) => d.name === 'worldCountryNames')[0].values = data[1];
+      Gapminder.data.filter((d) => d.name === 'gapminder')[0].values = data;
 
       return {
         title: 'Gapminder',
