@@ -72,6 +72,7 @@ import * as csvFertility from 'file-loader!./gapminder/fertility.txt';
 import * as csvLifetimeExpectancy from 'file-loader!./gapminder/lifeexpectancy.txt';
 import * as csvReligions from 'file-loader!./gapminder/main_religions.txt';
 import * as csvPopulation from 'file-loader!./gapminder/totalPop_interpolated.txt';
+import * as tsvWorldCountryNames from 'file-loader!./gapminder/world-country-names.tsv';
 import Gapminder from './gapminder/gapminder.vg.json';
 
 
@@ -116,6 +117,17 @@ const gapminderData = Promise.all([
   });
 
   return data;
+});
+
+const worldCountryNames = Promise.all([
+  loadTsvData(tsvWorldCountryNames)
+]).then((data) => {
+  return data[0].map((d) => {
+    return {
+      id: +d[0][1],
+      country: d[1][1]
+    };
+  });
 });
 
 export interface IVegaSpecDataset {
@@ -205,9 +217,10 @@ const vegaSpecs: IVegaSpecDataset[] = [
 ];
 
 export function loadDatasets(): Promise<IVegaSpecDataset[]> {
-  return gapminderData
+  return Promise.all([gapminderData, worldCountryNames])
     .then((data) => {
-      Gapminder.data[0].values = data;
+      Gapminder.data.filter((d) => d.name === 'gapminder')[0].values = data[0];
+      Gapminder.data.filter((d) => d.name === 'worldCountryNames')[0].values = data[1];
 
       return {
         title: 'Gapminder',

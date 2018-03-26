@@ -83,10 +83,33 @@
         "group": {"signal": "groupLabelCountries"},
         "fill": {"source": "countries"}
       }
+    },
+    {
+      "name": "world",
+      "url": "data/world-110m.json",
+      "format": {
+        "type": "topojson",
+        "feature": "countries"
+      }
+    },
+    {
+      "name": "graticule",
+      "transform": [
+        { "type": "graticule" }
+      ]
+    },
+    {
+      "name": "worldCountryNames",
+      "values": []
     }
   ],
 
   "signals": [
+    { "name": "gapminderWidth", "value": 300},
+    { "name": "gapminderHeight", "value": 200},
+    { "name": "mapWidth", "value": 300},
+    { "name": "mapHeight", "value": 200},
+
     {
       "name": "selectedCountries",
       "on": [
@@ -349,22 +372,33 @@
     {
       "name": "groupLabelYear",
       "value": "Selected Year"
+    },
+
+    {
+      "name": "projectionType",
+      "value": "mercator",
+      "bind": {
+        "input": "select",
+        "options": [
+          "albers",
+          "albersUsa",
+          "azimuthalEqualArea",
+          "azimuthalEquidistant",
+          "conicConformal",
+          "conicEqualArea",
+          "conicEquidistant",
+          "equirectangular",
+          "gnomonic",
+          "mercator",
+          "orthographic",
+          "stereographic",
+          "transverseMercator"
+        ]
+      }
     }
   ],
 
   "scales": [
-    {
-      "name": "x",
-      "type": "linear", "nice": true,
-      "domain": {"data": "gapminder", "field": {"signal": "xField"}},
-      "range": "width"
-    },
-    {
-      "name": "y",
-      "type": "linear", "nice": true, "zero": false,
-      "domain": {"data": "gapminder", "field": {"signal": "yField"}},
-      "range": "height"
-    },
     {
       "name": "size",
       "type": "linear", "nice": true, "zero": false,
@@ -379,105 +413,217 @@
     }
   ],
 
-  "axes": [
-    {
-      "title": {"signal": "xField"},
-      "orient": "bottom", "scale": "x",
-      "grid": true, "tickCount": 5
-    },
-    {
-      "title": {"signal": "yField"},
-      "orient": "left", "scale": "y",
-      "grid": true, "tickCount": 5
-    }
-  ],
-
-  "legends": [
-    {
-      "fill": "color",
-      "title": {"signal": "colorField"},
-      "orient": "right",
-      "encode": {
-        "symbols": {
-          "enter": {
-            "fillOpacity": {"value": 0.5}
-          }
-        },
-        "labels": {
-          "update": {
-            "text": {"field": "value"}
-          }
-        }
-      }
-    }
-  ],
+  "layout": {
+    "align": "each",
+    "padding": 20
+  },
 
   "marks": [
     {
-      "type": "text",
-      "encode": {
-        "update": {
-          "text": {"signal": "currentYear"},
-          "x": {"value": 230},
-          "y": {"value": 300},
-          "fill": {"value": "grey"},
-          "fillOpacity": {"value": 0.20},
-          "fontSize": {"value": 150},
-          "fontWeight": {"value": "bold"}
-        }
-      }
-    },
-    {
-      "name": "point",
-      "type": "symbol",
-      "from": {"data": "filteredCountries"},
-      "encode": {
-        "update": {
-          "fill": {"scale": "color", "field": "color"},
-          "x": {"scale": "x", "field": "x"},
-          "y": {"scale": "y", "field": "y"},
-          "size": {"scale": "size", "field": "size"},
-          "fillOpacity": [
-            {
-              "test": "indata('selectedCountries', 'country', datum.country)",
-              "value": 1
-            },
-            {"value": 0.5}
-          ],
-          "tooltip": {"field": "country"}
-        },
-        "hover": {
-          "fillOpacity": [
-            {"value": 0.8}
-          ]
-        }
-      }
-    },
-    {
-      "type": "text",
-      "from": {"data": "filteredCountries"},
-      "interactive": false,
+      "type": "group",
+
+      "signals": [
+        {"name": "width", "update": "gapminderWidth"},
+        {"name": "height", "update": "gapminderHeight"}
+      ],
+
       "encode": {
         "enter": {
-          "fill": {"value": "#333"},
-          "fontSize": {"value": 14},
-          "fontWeight": {"value": "bold"},
-          "text": {"field": "country"},
-          "align": {"value": "center"},
-          "baseline": {"value": "bottom"}
+          "width": {"signal": "gapminderWidth"},
+          "height": {"signal": "gapminderHeight"}
+        }
+      },
+
+      "scales": [
+        {
+          "name": "x",
+          "type": "linear", "nice": true,
+          "domain": {"data": "gapminder", "field": {"signal": "xField"}},
+          "range": "width"
         },
-        "update": {
-          "x": {"scale": "x", "field": "x"},
-          "y": {"scale": "y", "field": "y", "offset": -7},
-          "fillOpacity": [
-            {
-              "test": "indata('selectedCountries', 'country', datum.country)",
-              "value": 0.8
+        {
+          "name": "y",
+          "type": "linear", "nice": true, "zero": false,
+          "domain": {"data": "gapminder", "field": {"signal": "yField"}},
+          "range": "height"
+        }
+      ],
+
+      "axes": [
+        {
+          "title": {"signal": "xField"},
+          "orient": "bottom", "scale": "x",
+          "grid": true, "tickCount": 5
+        },
+        {
+          "title": {"signal": "yField"},
+          "orient": "left", "scale": "y",
+          "grid": true, "tickCount": 5
+        }
+      ],
+
+      "marks": [
+        {
+          "type": "text",
+          "encode": {
+            "update": {
+              "text": {"signal": "currentYear"},
+              "x": {"signal": "width / 2"},
+              "y": {"signal": "height / 2"},
+              "dx": {"signal": "-100"},
+              "dy": {"signal": "20"},
+              "fill": {"value": "grey"},
+              "fillOpacity": {"value": 0.20},
+              "fontSize": {"signal": "width / 4"},
+              "fontWeight": {"value": "bold"}
+            }
+          }
+        },
+        {
+          "name": "point",
+          "type": "symbol",
+          "from": {"data": "filteredCountries"},
+          "encode": {
+            "update": {
+              "fill": {"scale": "color", "field": "color"},
+              "x": {"scale": "x", "field": "x"},
+              "y": {"scale": "y", "field": "y"},
+              "size": {"scale": "size", "field": "size"},
+              "fillOpacity": [
+                {
+                  "test": "indata('selectedCountries', 'country', datum.country)",
+                  "value": 1
+                },
+                {"value": 0.5}
+              ],
+              "tooltip": {"field": "country"}
             },
-            {"value": 0}
+            "hover": {
+              "fillOpacity": [
+                {"value": 0.8}
+              ]
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "filteredCountries"},
+          "interactive": false,
+          "encode": {
+            "enter": {
+              "fill": {"value": "#333"},
+              "fontSize": {"value": 14},
+              "fontWeight": {"value": "bold"},
+              "text": {"field": "country"},
+              "align": {"value": "center"},
+              "baseline": {"value": "bottom"}
+            },
+            "update": {
+              "x": {"scale": "x", "field": "x"},
+              "y": {"scale": "y", "field": "y", "offset": -7},
+              "fillOpacity": [
+                {
+                  "test": "indata('selectedCountries', 'country', datum.country)",
+                  "value": 0.8
+                },
+                {"value": 0}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+
+      "signals": [
+        { "name": "projScale", "value": 50},
+        { "name": "projTranslate", "update": "[mapWidth / 2, mapHeight / 2]" }
+      ],
+
+      "encode": {
+        "enter": {
+          "width": {"signal": "mapWidth"},
+          "height": {"signal": "mapHeight"},
+          "clip": {"value": true}
+        }
+      },
+
+      "projections": [
+        {
+          "name": "projection",
+          "type": {"signal": "projectionType"},
+          "scale": {"signal": "projScale"},
+          "translate": {"signal": "projTranslate"}
+        }
+      ],
+
+      "marks": [
+        {
+          "type": "shape",
+          "from": {"data": "graticule"},
+          "encode": {
+            "update": {
+              "strokeWidth": {"value": 1},
+              "stroke": {"value": "#ddd"}
+            }
+          },
+          "transform": [
+            { "type": "geoshape", "projection": "projection" }
+          ]
+        },
+        {
+          "name": "mapCountry",
+          "type": "shape",
+          "from": {"data": "world"},
+          "encode": {
+            "update": {
+              "strokeWidth": {"value": 0.5},
+              "stroke": {"value": "grey"},
+              "fill": [
+                {
+                  "test": "indata('selectedCountries', 'country', datum.country)",
+                  "value": "grey"
+                },
+                {"value": "lightgrey"}
+              ],
+              "tooltip": {"field": "id"},
+              "zindex": {"value": 0}
+            },
+            "hover": {
+              "strokeWidth": {"value": 1},
+              "fill": {"value": "grey"},
+              "zindex": {"value": 1}
+            }
+          },
+          "transform": [
+            { "type": "geoshape", "projection": "projection" }
           ]
         }
-      }
+      ]
+    },
+    {
+      "type": "group",
+
+      "legends": [
+        {
+          "fill": "color",
+          "title": {"signal": "colorField"},
+          "orient": "right",
+          "encode": {
+            "symbols": {
+              "enter": {
+                "fillOpacity": {"value": 0.5}
+              }
+            },
+            "labels": {
+              "update": {
+                "text": {"field": "value"}
+              }
+            }
+          }
+        }
+      ]
     }
   ]
 }
