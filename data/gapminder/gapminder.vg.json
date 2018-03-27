@@ -728,11 +728,17 @@
                 },
                 {"value": "lightgrey"}
               ],
-              "tooltip": {"signal": "datum.countryRef.country"},
+              "tooltip": {"signal": "(isString(datum.countryRef.country)) ? datum.countryRef.country : 'No data available'"},
               "zindex": {"value": 0}
             },
             "hover": {
-              "fill": {"signal": "scale('color', datum.countryRef.color)"},
+              "fill": [
+                {
+                  "test": "isString(datum.countryRef.color)",
+                  "signal": "scale('color', datum.countryRef.color)"
+                },
+                {"value": "grey"}
+              ],
               "zindex": {"value": 1}
             }
           },
