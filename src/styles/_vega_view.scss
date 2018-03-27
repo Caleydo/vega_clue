@@ -19,6 +19,8 @@
 
   .vega-wrapper {
     padding: 10px;
+    display: flex;
+    width: 100%;
 
     > * {
       vertical-align: middle;
@@ -26,9 +28,12 @@
 
     .marks {
       margin-right: 1em;
+      order: 2;
     }
 
     .vega-bindings {
+      order: 1;
+      flex: 1;
       font-size: 14px;
       line-height: 20px;
     }
@@ -36,9 +41,12 @@
     .vega-bind-name {
       display: inline-block;
       width: 105px;
+      font-weight: 500;
     }
 
     .vega-bind {
+      margin-bottom: 10px;
+
       input[type="range"] {
         padding: 0;
       }

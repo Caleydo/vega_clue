@@ -72,6 +72,7 @@ import * as csvFertility from 'file-loader!./gapminder/fertility.txt';
 import * as csvLifetimeExpectancy from 'file-loader!./gapminder/lifeexpectancy.txt';
 import * as csvReligions from 'file-loader!./gapminder/main_religions.txt';
 import * as csvPopulation from 'file-loader!./gapminder/totalPop_interpolated.txt';
+import * as tsvWorldCountryNames from 'file-loader!./gapminder/world-country-names.tsv';
 import Gapminder from './gapminder/gapminder.vg.json';
 
 
@@ -93,18 +94,22 @@ const gapminderData = Promise.all([
   loadTsvData(csvFertility),
   loadTsvData(csvLifetimeExpectancy),
   loadTsvData(csvReligions),
-  loadTsvData(csvPopulation)
+  loadTsvData(csvPopulation),
+  loadTsvData(tsvWorldCountryNames)
 ]).then((csv) => {
-  const [country, gdp, childMortality, continent, fertility, lifetimeExpectancy, religions, population] = [...csv];
+  const [country, gdp, childMortality, continent, fertility, lifetimeExpectancy, religions, population, worldCountryNames] = [...csv];
   const data = [];
 
   country.forEach((d, i) => {
     gdp[i].forEach((e, j) => {
+      const countryName = worldCountryNames.filter((f) => f[1][1] == country[i][0][1])[0];
+      const mapId = (countryName) ? +countryName[0][1] : 0;
       const r = {
-        continent: continent[i][0][1],
-        main_religion: religions[i][0][1],
         country: country[i][0][1],
         year: +gdp[i][j][0],
+        map_id: +mapId,
+        continent: continent[i][0][1],
+        main_religion: religions[i][0][1],
         gdp: +gdp[i][j][1],
         child_mortality: +childMortality[i][j][1],
         fertility: +fertility[i][j][1],
@@ -207,7 +212,7 @@ const vegaSpecs: IVegaSpecDataset[] = [
 export function loadDatasets(): Promise<IVegaSpecDataset[]> {
   return gapminderData
     .then((data) => {
-      Gapminder.data[0].values = data;
+      Gapminder.data.filter((d) => d.name === 'gapminder')[0].values = data;
 
       return {
         title: 'Gapminder',
