@@ -428,6 +428,12 @@
       "type": "ordinal",
       "domain": {"data": "gapminder", "field": {"signal": "colorField"}},
       "range": "category"
+    },
+    {
+      "name": "mapIdToCountryName",
+      "type": "ordinal",
+      "domain": {"data": "gapminder", "field": "map_id"},
+      "range": {"data": "gapminder", "field": "country"}
     }
   ],
 
@@ -518,7 +524,7 @@
                 },
                 {"value": 0.5}
               ],
-              "tooltip": {"signal": "datum.country + ' (' + datum.map_id + ')'"}
+              "tooltip": {"signal": "datum.country"}
             },
             "hover": {
               "fillOpacity": [
@@ -609,7 +615,7 @@
                 },
                 {"value": "lightgrey"}
               ],
-              "tooltip": {"signal": "datum.id"},
+              "tooltip": {"scale": "mapIdToCountryName", "field": "id"},
               "zindex": {"value": 0}
             },
             "hover": {
