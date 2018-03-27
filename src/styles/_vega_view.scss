@@ -28,9 +28,11 @@
 
     .marks {
       margin-right: 1em;
+      order: 2;
     }
 
     .vega-bindings {
+      order: 1;
       flex: 1;
       font-size: 14px;
       line-height: 20px;
