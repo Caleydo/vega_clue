@@ -307,7 +307,12 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
           .map((d, i) => {
             const context = {name: s.name, datum: d, index: i};
             const title = template(context);
-            return {id: title, text: title, group: group};
+            return {
+              // Special case! Use title also id to make items distinguishable, because name is equal for all items
+              id: `${s.name} ${TAG_VALUE_SEPARATOR} ${title}`,
+              text: title,
+              group: group
+            };
           });
         return setProperty(group, values); // property of type SET
       });
