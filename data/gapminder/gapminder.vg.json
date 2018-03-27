@@ -95,7 +95,15 @@
       "format": {
         "type": "topojson",
         "feature": "countries"
-      }
+      },
+      "transform": [
+        {
+          "type": "lookup",
+          "from": "filteredCountries", "key": "map_id",
+          "fields": ["id"], "as": ["countryRef"],
+          "default": {}
+        }
+      ]
     },
     {
       "name": "graticule",
@@ -160,14 +168,16 @@
       "name": "shift",
       "value": false,
       "on": [
-        {"events": "@point:click", "update": "event.shiftKey", "force": true}
+        {"events": "@point:click", "update": "event.shiftKey", "force": true},
+        {"events": "@mapCountry:click", "update": "event.shiftKey", "force": true}
       ]
     },
     {
       "name": "clicked",
       "value": null,
       "on": [
-        {"events": "@point:click", "update": "datum", "force": true}
+        {"events": "@point:click", "update": "datum", "force": true},
+        {"events": "@mapCountry:click", "update": "datum.countryRef", "force": true}
       ]
     },
     {
@@ -428,12 +438,6 @@
       "type": "ordinal",
       "domain": {"data": "gapminder", "field": {"signal": "colorField"}},
       "range": "category"
-    },
-    {
-      "name": "mapIdToCountryName",
-      "type": "ordinal",
-      "domain": {"data": "gapminder", "field": "map_id"},
-      "range": {"data": "gapminder", "field": "country"}
     }
   ],
 
@@ -610,12 +614,16 @@
               "stroke": {"value": "grey"},
               "fill": [
                 {
+                  "test": "indata('selectedCountries', 'country', datum.countryRef.country)",
+                  "value": "grey"
+                },
+                {
                   "test": "datum.id == hoverGapminderCountry.map_id",
                   "value": "grey"
                 },
                 {"value": "lightgrey"}
               ],
-              "tooltip": {"scale": "mapIdToCountryName", "field": "id"},
+              "tooltip": {"signal": "datum.countryRef.country"},
               "zindex": {"value": 0}
             },
             "hover": {
