@@ -1,10 +1,13 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v3.json",
-  "title": "Vega Gapminder",
   "description": "Gapminder-inspired example with a linked map. Selected are countries are highlighted in both visualizations.",
-  "width": 800,
-  "height": 600,
   "padding": 5,
+
+  "layout": {
+    "align": "each",
+    "padding": 20,
+    "columns": 2
+  },
 
   "data": [
     {
@@ -116,10 +119,10 @@
   ],
 
   "signals": [
-    { "name": "gapminderWidth", "value": 300},
-    { "name": "gapminderHeight", "value": 200},
-    { "name": "mapWidth", "value": 300},
-    { "name": "mapHeight", "value": 200},
+    { "name": "gapminderWidth", "value": 600},
+    { "name": "gapminderHeight", "value": 400},
+    { "name": "mapWidth", "value": 600},
+    { "name": "mapHeight", "value": 400},
 
     {
       "name": "hoverMapCountry",
@@ -457,11 +460,6 @@
     }
   ],
 
-  "layout": {
-    "align": "each",
-    "padding": 20
-  },
-
   "marks": [
     {
       "type": "group",
@@ -584,8 +582,31 @@
     {
       "type": "group",
 
+      "legends": [
+        {
+          "fill": "color",
+          "title": {"signal": "colorField"},
+          "orient": "right",
+          "encode": {
+            "symbols": {
+              "enter": {
+                "fillOpacity": {"value": 0.5}
+              }
+            },
+            "labels": {
+              "update": {
+                "text": {"field": "value"}
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+
       "signals": [
-        { "name": "projScale", "value": 50},
+        { "name": "projScale", "value": 100},
         { "name": "projTranslate", "update": "[mapWidth / 2, mapHeight / 2]" }
       ],
 
@@ -650,29 +671,6 @@
           "transform": [
             { "type": "geoshape", "projection": "projection" }
           ]
-        }
-      ]
-    },
-    {
-      "type": "group",
-
-      "legends": [
-        {
-          "fill": "color",
-          "title": {"signal": "colorField"},
-          "orient": "right",
-          "encode": {
-            "symbols": {
-              "enter": {
-                "fillOpacity": {"value": 0.5}
-              }
-            },
-            "labels": {
-              "update": {
-                "text": {"field": "value"}
-              }
-            }
-          }
         }
       ]
     }

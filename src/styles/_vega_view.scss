@@ -19,6 +19,8 @@
 
   .vega-wrapper {
     padding: 10px;
+    display: flex;
+    width: 100%;
 
     > * {
       vertical-align: middle;
@@ -29,6 +31,7 @@
     }
 
     .vega-bindings {
+      flex: 1;
       font-size: 14px;
       line-height: 20px;
     }
