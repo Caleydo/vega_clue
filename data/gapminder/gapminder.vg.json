@@ -615,11 +615,11 @@
               "fill": [
                 {
                   "test": "indata('selectedCountries', 'country', datum.countryRef.country)",
-                  "value": "grey"
+                  "signal": "scale('color', datum.countryRef.color)"
                 },
                 {
                   "test": "datum.id == hoverGapminderCountry.map_id",
-                  "value": "grey"
+                  "signal": "scale('color', datum.countryRef.color)"
                 },
                 {"value": "lightgrey"}
               ],
@@ -627,8 +627,7 @@
               "zindex": {"value": 0}
             },
             "hover": {
-              "strokeWidth": {"value": 1},
-              "fill": {"value": "grey"},
+              "fill": {"signal": "scale('color', datum.countryRef.color)"},
               "zindex": {"value": 1}
             }
           },
