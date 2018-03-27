@@ -113,7 +113,7 @@
     {
       "name": "graticule",
       "transform": [
-        { "type": "graticule" }
+        { "type": "graticule", "step": [15, 15] }
       ]
     }
   ],
@@ -462,6 +462,7 @@
 
   "marks": [
     {
+      "name": "gapminderGroup",
       "type": "group",
 
       "signals": [
@@ -580,6 +581,7 @@
       ]
     },
     {
+      "name": "legendGroup",
       "type": "group",
 
       "legends": [
@@ -603,11 +605,75 @@
       ]
     },
     {
+      "name": "mapGroup",
       "type": "group",
 
       "signals": [
-        { "name": "projScale", "value": 100},
-        { "name": "projTranslate", "update": "[mapWidth / 2, mapHeight / 2]" }
+        {"name": "width", "update": "mapWidth"},
+        {"name": "height", "update": "mapHeight"},
+
+        { "name": "translate", "update": "[mapWidth / 2, mapHeight / 2]" },
+        {
+          "name": "scale",
+          "value": 100,
+          "on": [{
+            "events": {"type": "wheel", "consume": true},
+            "update": "clamp(scale * pow(1.0005, -event.deltaY * pow(16, event.deltaMode)), 100, 3000)"
+          }]
+        },
+        {
+          "name": "angles",
+          "value": [0, 0],
+          "on": [{
+            "events": "mousedown",
+            "update": "[rotateX, centerY]"
+          }]
+        },
+        {
+          "name": "cloned",
+          "value": null,
+          "on": [{
+            "events": "mousedown",
+            "update": "copy('projection')"
+          }]
+        },
+        {
+          "name": "start",
+          "value": null,
+          "on": [{
+            "events": "mousedown",
+            "update": "invert(cloned, xy())"
+          }]
+        },
+        {
+          "name": "drag", "value": null,
+          "on": [{
+            "events": "[mousedown, window:mouseup] > window:mousemove",
+            "update": "invert(cloned, xy())"
+          }]
+        },
+        {
+          "name": "delta", "value": null,
+          "on": [{
+            "events": {"signal": "drag"},
+            "update": "[drag[0] - start[0], start[1] - drag[1]]"
+          }]
+        },
+        {
+          "name": "rotateX", "value": 0,
+          "on": [{
+            "events": {"signal": "delta"},
+            "update": "angles[0] + delta[0]"
+          }]
+        },
+        {
+          "name": "centerY", "value": 0,
+          "on": [{
+            "events": {"signal": "delta"},
+            "update": "clamp(angles[1] + delta[1], -60, 60)"
+          }]
+        }
+
       ],
 
       "encode": {
@@ -622,8 +688,10 @@
         {
           "name": "projection",
           "type": {"signal": "projectionType"},
-          "scale": {"signal": "projScale"},
-          "translate": {"signal": "projTranslate"}
+          "scale": {"signal": "scale"},
+          "rotate": [{"signal": "rotateX"}, 0, 0],
+          "center": [0, {"signal": "centerY"}],
+          "translate": {"signal": "translate"}
         }
       ],
 
