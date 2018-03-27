@@ -430,7 +430,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
         template = handlebars.compile(rawTitle);
 
         return createPropertyValue(PropertyType.CATEGORICAL, {
-          id: signal.name,
+          id: template(context),
           text: template(context),
           group: signal.search.group
         });
