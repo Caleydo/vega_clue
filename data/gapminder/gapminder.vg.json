@@ -1,5 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v3.json",
+  "title": "Vega Gapminder",
+  "description": "Gapminder-inspired example with a linked map. Selected are countries are highlighted in both visualizations.",
   "width": 800,
   "height": 600,
   "padding": 5,
