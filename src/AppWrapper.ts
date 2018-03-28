@@ -6,6 +6,9 @@ import {create as createHeader, AppHeaderLink, AppHeader} from 'phovea_ui/src/he
 import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
 import MixedStorageProvenanceGraphManager from 'phovea_core/src/provenance/MixedStorageProvenanceGraphManager';
 import lazyBootstrap from 'phovea_ui/src/_lazyBootstrap';
+import LoginMenu from 'phovea_clue/src/menu/LoginMenu';
+import ProvenanceGraphMenu from 'phovea_clue/src/menu/ProvenanceGraphMenu';
+import {isLoggedIn} from 'phovea_core/src/security';
 import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
 import {loadProvenanceGraphVis, loadStoryVis} from 'phovea_clue/src/vis_loader';
 import * as cmode from 'phovea_clue/src/mode';
@@ -84,6 +87,17 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
     // trigger bootstrap loading
     lazyBootstrap();
 
+    const loginMenu = new LoginMenu(this.header, {
+      insertIntoHeader: true,
+    });
+    loginMenu.on(LoginMenu.EVENT_LOGGED_OUT, () => {
+      // reopen after logged out
+      loginMenu.forceShowDialog();
+    });
+
+    const provenanceMenu = new ProvenanceGraphMenu(clueManager, body, false);
+    this.header.insertCustomRightMenu(provenanceMenu.node);
+
     const modeSelector = body.querySelector('header');
     //modeSelector.classList.add('collapsed');
     modeSelector.classList.add('clue-modeselector');
@@ -99,6 +113,11 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
     });
 
     graph.then((graph) => {
+      clueManager.list().then((graphs) => {
+        provenanceMenu.build(graphs);
+        provenanceMenu.setGraph(graph);
+      });
+
       cmode.createButton(modeSelector, {
         size: 'sm'
       });
@@ -132,7 +151,23 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
       }
     });
 
-    graphResolver(clueManager.chooseLazy(true));
+    const initSession = () => {
+      //logged in, so we can resolve the graph for real
+      graphResolver(clueManager.chooseLazy(true));
+    };
+
+    let forceShowLoginDialogTimeout: any = -1;
+    // INITIAL LOGIC
+    loginMenu.on(LoginMenu.EVENT_LOGGED_IN, () => {
+      clearTimeout(forceShowLoginDialogTimeout);
+      initSession();
+    });
+    if (!isLoggedIn()) {
+      //wait 1sec before the showing the login dialog to give the auto login mechanism a chance
+      forceShowLoginDialogTimeout = setTimeout(() => loginMenu.forceShowDialog(), 1000);
+    } else {
+      initSession();
+    }
 
     return {graph, manager: clueManager, storyVis, provVis};
   }
