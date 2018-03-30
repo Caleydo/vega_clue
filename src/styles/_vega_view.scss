@@ -66,3 +66,21 @@
     }
   }
 }
+
+// headless mode for thumbnails
+.headless {
+  .vega-view {
+    display: flex;
+    justify-content: center;
+
+    .vega-wrapper {
+      width: auto;
+      transform: scale(1.2) translateY(70px); // increase the size a bit to fill the thumbnail
+
+      .vega-bindings {
+        max-width: 250px;
+        margin-right: 20px;
+      }
+    }
+  }
+}
