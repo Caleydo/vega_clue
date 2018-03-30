@@ -90,10 +90,6 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
     const loginMenu = new LoginMenu(this.header, {
       insertIntoHeader: true,
     });
-    loginMenu.on(LoginMenu.EVENT_LOGGED_OUT, () => {
-      // reopen after logged out
-      loginMenu.forceShowDialog();
-    });
 
     const provenanceMenu = new ProvenanceGraphMenu(clueManager, body, false);
     this.header.insertCustomRightMenu(provenanceMenu.node);
@@ -151,23 +147,7 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
       }
     });
 
-    const initSession = () => {
-      //logged in, so we can resolve the graph for real
-      graphResolver(clueManager.chooseLazy(true));
-    };
-
-    let forceShowLoginDialogTimeout: any = -1;
-    // INITIAL LOGIC
-    loginMenu.on(LoginMenu.EVENT_LOGGED_IN, () => {
-      clearTimeout(forceShowLoginDialogTimeout);
-      initSession();
-    });
-    if (!isLoggedIn()) {
-      //wait 1sec before the showing the login dialog to give the auto login mechanism a chance
-      forceShowLoginDialogTimeout = setTimeout(() => loginMenu.forceShowDialog(), 1000);
-    } else {
-      initSession();
-    }
+    graphResolver(clueManager.chooseLazy(true));
 
     return {graph, manager: clueManager, storyVis, provVis};
   }
