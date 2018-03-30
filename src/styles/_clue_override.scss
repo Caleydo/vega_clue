@@ -99,6 +99,16 @@ div.stories {
 
   div.state {
 
+    > div:hover {
+      .slabel, .icon, .glyph {
+        font-weight: 700;
+      }
+    }
+
+    &.phovea-select-selected .slabel {
+      font-weight: 700;
+    }
+
     .toolbar {
       margin: .2em .5em;
 
@@ -115,3 +125,5 @@ div.stories {
     }
   }
 }
+
+
