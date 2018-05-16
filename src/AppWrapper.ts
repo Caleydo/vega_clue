@@ -1,7 +1,7 @@
 import {APP_NAME} from './language';
 import {create as createHeader, AppHeaderLink, AppHeader} from 'phovea_ui/src/header';
 import {mixin} from 'phovea_core/src';
-import {IProvenanceGraph, IProvenanceGraphTracker, IActionFunctionRegistry} from 'provenance-core/src/api';
+import {IProvenanceGraph, IProvenanceTracker, IActionFunctionRegistry} from 'provenance-core/src/api';
 import {ProvenanceGraph} from 'provenance-core/src/ProvenanceGraph';
 import {ProvenanceTracker} from 'provenance-core/src/ProvenanceTracker';
 import {ActionFunctionRegistry} from 'provenance-core/src/ActionFunctionRegistry';
@@ -63,7 +63,7 @@ export class AppWrapper<T extends IView<T>> {
 
     const registry: IActionFunctionRegistry = new ActionFunctionRegistry();
     const graph: IProvenanceGraph = new ProvenanceGraph({name: APP_NAME, version: '1.0.0'});
-    const provTracker: IProvenanceGraphTracker = new ProvenanceTracker(registry, graph);
+    const provTracker: IProvenanceTracker = new ProvenanceTracker(registry, graph);
     this.createApp(provTracker, main);
   }
 
@@ -73,7 +73,7 @@ export class AppWrapper<T extends IView<T>> {
    * @param {HTMLElement} main root dom element
    * @returns {PromiseLike<T> | T}
    */
-  protected createApp(provTracker: IProvenanceGraphTracker, main: HTMLElement): PromiseLike<T> | T {
+  protected createApp(provTracker: IProvenanceTracker, main: HTMLElement): PromiseLike<T> | T {
     // lazy loading for better module bundling
     return Promise.all([System.import('./internal/App')]).then((modules) => {
       const app: T = new modules[0].default(provTracker, main);

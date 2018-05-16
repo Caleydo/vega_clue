@@ -10,7 +10,7 @@ import {VegaView} from './VegaView';
 import {Spec} from 'vega-lib';
 import * as vega from 'vega-lib';
 import {showLoadErrorDialog} from '../dialogs';
-import {IProvenanceGraphTracker} from 'provenance-core/src/api';
+import {IProvenanceTracker} from 'provenance-core/src/api';
 
 export default class App extends EventHandler implements IView<App> {
   private readonly $node: d3.Selection<App>;
@@ -20,7 +20,7 @@ export default class App extends EventHandler implements IView<App> {
   private readonly vegaExampleUrl = 'https://vega.github.io/vega/examples/interactive-legend.vg.json';
   private readonly vegaDatasetUrl = 'https://vega.github.io/vega-datasets/';
 
-  constructor(public readonly provTracker: IProvenanceGraphTracker, parent: HTMLElement) {
+  constructor(public readonly provTracker: IProvenanceTracker, parent: HTMLElement) {
     super();
 
     this.$node = d3.select(parent)

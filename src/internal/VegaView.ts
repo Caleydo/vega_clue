@@ -6,7 +6,7 @@ import * as vega from 'vega-lib';
 import {Spec, View, BindRange} from 'vega-lib';
 import {ISetStateMetadata, setState} from './cmds';
 import {ClueData, IClueSignal, IAsyncData, IAsyncSignal} from './spec';
-import {IProvenanceGraphTracker, ReversibleAction, Metadata, StateNode} from 'provenance-core/src/api';
+import {IProvenanceTracker, ReversibleAction, Metadata, StateNode} from 'provenance-core/src/api';
 
 
 interface IVegaViewOptions {
@@ -99,7 +99,7 @@ export class VegaView implements IView<VegaView> {
       });
   }
 
-  constructor(parent: HTMLElement, private readonly provTracker: IProvenanceGraphTracker, private spec: Spec) {
+  constructor(parent: HTMLElement, private readonly provTracker: IProvenanceTracker, private spec: Spec) {
     this.$node = d3.select(parent)
       .append('div')
       .classed('vega-view', true)
