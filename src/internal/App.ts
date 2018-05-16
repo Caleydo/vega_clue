@@ -1,29 +1,18 @@
 /**
- * Created by Caleydo Team on 31.08.2016.
+ * Created by Holger Stitz on 16.05.2018
  */
-
 import * as d3 from 'd3';
 import * as $ from 'jquery';
-import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
-import {cat, IObjectRef} from 'phovea_core/src/provenance';
 import {EventHandler} from 'phovea_core/src/event';
-import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
-import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
-import {IProperty, IPropertyValue} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
 import {IView} from '../AppWrapper';
 import {IVegaSpecDataset, loadDatasets} from '../../data';
 import {VegaView} from './VegaView';
 import {Spec} from 'vega-lib';
 import * as vega from 'vega-lib';
 import {showLoadErrorDialog} from '../dialogs';
+import {IProvenanceGraphTracker} from 'provenance-core/src/api';
 
-export default class App extends EventHandler implements IView<App>, IVisStateApp {
-  /**
-   * IObjectRef to this App instance
-   * @type {IObjectRef<App>}
-   */
-  readonly ref: IObjectRef<App>;
-
+export default class App extends EventHandler implements IView<App> {
   private readonly $node: d3.Selection<App>;
 
   private vegaView: VegaView;
@@ -31,20 +20,8 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
   private readonly vegaExampleUrl = 'https://vega.github.io/vega/examples/interactive-legend.vg.json';
   private readonly vegaDatasetUrl = 'https://vega.github.io/vega-datasets/';
 
-  /**
-   * Promise to wait for Vega view initialization, before calling `getVisStateProps()`
-   */
-  private initCompleteResolve;
-  private initCompletePromise: Promise<VegaView> = new Promise<VegaView>((resolve, reject) => {
-    this.initCompleteResolve = resolve;
-  });
-
-  constructor(public readonly graph: ProvenanceGraph, public readonly graphManager: CLUEGraphManager, parent: HTMLElement) {
+  constructor(public readonly provTracker: IProvenanceGraphTracker, parent: HTMLElement) {
     super();
-
-    // add OrdinoApp app as (first) object to provenance graph
-    // need old name for compatibility
-    this.ref = this.graph.findOrAddObject(this, 'App', cat.visual);
 
     this.$node = d3.select(parent)
       .append('div')
@@ -64,7 +41,6 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
         }
         return this.initMultiSpecs(vegaSpecs);
       })
-      .then((vegaView: VegaView) => this.initCompleteResolve(vegaView))
       .then(() => this);
   }
 
@@ -190,17 +166,9 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
     }
 
     // init new view with selected spec
-    this.vegaView = new VegaView(<HTMLElement>this.$node.select('.view-wrapper').node(), this.graph, spec);
+    this.vegaView = new VegaView(<HTMLElement>this.$node.select('.view-wrapper').node(), this.provTracker, spec);
 
     return this.vegaView.init();
-  }
-
-  getVisStateProps(): Promise<IProperty[]> {
-    return this.initCompletePromise.then(() => this.vegaView.getVisStateProps());
-  }
-
-  getCurrVisState(): Promise<IPropertyValue[]> {
-    return this.vegaView.getCurrVisState();
   }
 
   remove() {
