@@ -59,7 +59,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
   init(): Promise<App> {
     return loadDatasets()
       .then((vegaSpecs: IVegaSpecDataset[]) => {
-        if(vegaSpecs.length === 1) {
+        if (vegaSpecs.length === 1) {
           return this.initSingleSpec(vegaSpecs);
         }
         return this.initMultiSpecs(vegaSpecs);
@@ -131,13 +131,13 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
     const $select = this.$node.select('.dataset-selector select');
 
-    const nested_data = d3.nest()
+    const nestedData = d3.nest()
       .key((d: IVegaSpecDataset) => d.category)
       .entries(datasets);
 
     const $optgroups = $select
       .selectAll('optgroup')
-      .data(nested_data);
+      .data(nestedData);
 
     const $optgroupEnter = $optgroups.enter().append('optgroup')
       .attr('label', (d) => d.key);
