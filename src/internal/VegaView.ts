@@ -131,7 +131,7 @@ export class VegaView implements IView<VegaView> {
 
     this.registerHandlebarsHelper();
 
-    this.provTracker.registry.register(VegaView.ACTION_SET_STATE, this.setStateImpl.bind(this)); // TODO add another parameter for this
+    this.provTracker.registry.register(VegaView.ACTION_SET_STATE, this.setStateImpl, this);
 
     return vegaViewReady.then(() => this);
   }
@@ -170,7 +170,7 @@ export class VegaView implements IView<VegaView> {
     vegaView.setState(state);
     this.blockSignalHandler = false;
 
-    return bak;
+    return Promise.resolve(bak);
   }
 
   /**
