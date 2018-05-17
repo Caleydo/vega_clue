@@ -1,10 +1,7 @@
 import {APP_NAME} from './language';
 import {create as createHeader, AppHeaderLink, AppHeader} from 'phovea_ui/src/header';
 import {mixin} from 'phovea_core/src';
-import {IProvenanceGraph, IProvenanceTracker, IActionFunctionRegistry} from 'provenance-core/src/api';
-import {ProvenanceGraph} from 'provenance-core/src/ProvenanceGraph';
-import {ProvenanceTracker} from 'provenance-core/src/ProvenanceTracker';
-import {ActionFunctionRegistry} from 'provenance-core/src/ActionFunctionRegistry';
+import {IProvenanceGraph, IProvenanceTracker, IActionFunctionRegistry, ProvenanceGraph, ProvenanceTracker, ActionFunctionRegistry} from '@visualstorytelling/provenance-core';
 
 
 export interface IView<T> {

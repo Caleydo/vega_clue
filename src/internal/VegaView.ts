@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 import * as vega from 'vega-lib';
 import {Spec, View, BindRange} from 'vega-lib';
 import {ClueData, IClueSignal, IAsyncData, IAsyncSignal} from './spec';
-import {IProvenanceTracker, ReversibleAction, StateNode, ActionMetadata, Action} from 'provenance-core/src/api';
+import {IProvenanceTracker, ReversibleAction, StateNode, ActionMetadata, Action} from '@visualstorytelling/provenance-core';
 
 
 interface IVegaViewOptions {

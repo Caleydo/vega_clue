@@ -10,7 +10,7 @@ import {VegaView} from './VegaView';
 import {Spec} from 'vega-lib';
 import * as vega from 'vega-lib';
 import {showLoadErrorDialog} from '../dialogs';
-import {IProvenanceTracker} from 'provenance-core/src/api';
+import {IProvenanceTracker} from '@visualstorytelling/provenance-core';
 
 export default class App extends EventHandler implements IView<App> {
   private readonly $node: d3.Selection<App>;
