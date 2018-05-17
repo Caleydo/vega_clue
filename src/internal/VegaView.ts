@@ -4,9 +4,8 @@ import * as handlebars from 'handlebars/dist/handlebars';
 import * as d3 from 'd3';
 import * as vega from 'vega-lib';
 import {Spec, View, BindRange} from 'vega-lib';
-import {ISetStateMetadata, setState} from './cmds';
 import {ClueData, IClueSignal, IAsyncData, IAsyncSignal} from './spec';
-import {IProvenanceTracker, ReversibleAction, Metadata, StateNode} from 'provenance-core/src/api';
+import {IProvenanceTracker, ReversibleAction, StateNode, ActionMetadata, Action} from 'provenance-core/src/api';
 
 
 interface IVegaViewOptions {
@@ -82,20 +81,33 @@ export class VegaView implements IView<VegaView> {
     }
 
     promise
-      .then((): Metadata => {
+      .then((): ActionMetadata => {
         const rawTitle = (signalSpec.track.title) ? signalSpec.track.title : `{{name}} = {{value}}`;
         const template = handlebars.compile(rawTitle);
         return {
-          createdBy: 'me',
-          createdOn: Date.toString(),
           tags: [],
           userIntent: template(context),
           category: signalSpec.track.category || 'data',
           operation: signalSpec.track.operation || 'update'
         };
       })
-      .then((metadata: Metadata) => {
-        return this.pushNewGraphNode(metadata, vegaView.getState());
+      .then((metadata: ActionMetadata): Action => {
+        const state = vegaView.getState();
+        return {
+          metadata,
+          do: VegaView.ACTION_SET_STATE,
+          doArguments: [state],
+          undo: VegaView.ACTION_SET_STATE,
+          undoArguments: [this.currentState]
+        } as ReversibleAction;
+      })
+      .then((action: Action): Promise<StateNode> => {
+        return this.provTracker.applyAction(action)
+          .then((stateNode) => {
+            stateNode.label = stateNode.action.metadata.userIntent;
+            console.log(stateNode);
+            return stateNode;
+          });
       });
   }
 
@@ -130,8 +142,7 @@ export class VegaView implements IView<VegaView> {
     this.$node.datum(vegaView);
 
     this.registerHandlebarsHelper();
-
-    this.provTracker.registry.register(VegaView.ACTION_SET_STATE, this.setStateImpl, this);
+    this.registerActionFunctions();
 
     return vegaViewReady.then(() => this);
   }
@@ -154,13 +165,17 @@ export class VegaView implements IView<VegaView> {
     this.$node.remove();
   }
 
+  private registerActionFunctions() {
+    this.provTracker.registry.register(VegaView.ACTION_SET_STATE, this.setState, this);
+  }
+
   /**
    * Apply a given state to the current Vega view.
    *
    * @param state New state that will be applied to the Vega view
    * @returns {any} Backup of the previous state
    */
-  setStateImpl(state: any): any {
+  private async setState(state: any): Promise<any> {
     const vegaView = <any>this.$node.datum();
     const bak = this.currentState;
     this.currentState = state;
@@ -170,29 +185,7 @@ export class VegaView implements IView<VegaView> {
     vegaView.setState(state);
     this.blockSignalHandler = false;
 
-    return Promise.resolve(bak);
-  }
-
-  /**
-   * Push a new state with metadata to the provenance graph.
-   *
-   * @param {ISetStateMetadata} metadata
-   * @param state
-   */
-  private pushNewGraphNode(metadata: Metadata, state: any): Promise<StateNode> {
-    const action: ReversibleAction = {
-      metadata,
-      do: VegaView.ACTION_SET_STATE,
-      doArguments: [state],
-      undo: VegaView.ACTION_SET_STATE,
-      undoArguments: [this.currentState]
-    };
-
-    return this.provTracker.applyAction(action)
-      .then((stateNode) => {
-        stateNode.label = metadata.userIntent;
-        return stateNode;
-      });
+    return state;
   }
 
   // /**
