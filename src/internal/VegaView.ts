@@ -102,7 +102,7 @@ export class VegaView implements IView<VegaView> {
         } as ReversibleAction;
       })
       .then((action: Action): Promise<StateNode> => {
-        return this.provTracker.applyAction(action)
+        return this.provTracker.applyAction(action, false) // skipFirstDoFunctionCall = false
           .then((stateNode) => {
             stateNode.label = stateNode.action.metadata.userIntent;
             console.log(stateNode);
