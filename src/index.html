@@ -1,16 +1,20 @@
 <!doctype html>
 <html>
+
 <head>
-    <title>Vega Gapminder</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="icon" href="${require('phovea_ui/src/assets/favicon.png')}">
-    ${require('html-loader?interpolate!phovea_ui/src/template/_head.html')}
+  <title>Vega Gapminder</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="icon" href="${require('phovea_ui/src/assets/favicon.png')}"> ${require('html-loader?interpolate!phovea_ui/src/template/_head.html')}
 </head>
+
 <body>
 
-<h3 style="margin: 5px;">Loading &hellip;</h3>
+  <main>
+    <h3 class="loading" style="margin: 5px;">Loading &hellip;</h3>
+  </main>
 
-${require('html-loader?interpolate!phovea_ui/src/template/_body.html')}
+  ${require('html-loader?interpolate!phovea_ui/src/template/_body.html')}
 
 </body>
+
 </html>

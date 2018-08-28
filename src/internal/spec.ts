@@ -3,7 +3,7 @@ import {NewSignal, Data} from 'vega-lib';
 /**
  * Extend the Vega Signal specification about tracking
  */
-export interface ClueSignal extends NewSignal {
+export interface IClueSignal extends NewSignal {
   track?: ITrackProv;
   search?: ISearchProv;
 }
@@ -177,4 +177,4 @@ export type ClueData = Data & {
    * Helper property to make it equal to the signal typings
    */
   value: any;
-}
+};

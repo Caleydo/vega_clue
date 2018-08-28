@@ -10,17 +10,6 @@ module.exports = function (registry) {
   //registry.push('extension-type', 'extension-id', function() { return import('./src/extension_impl'); }, {});
   /// #endif
   // generator-phovea:begin
-  registry.push('actionFunction', 'vegaSetState', function () {
-    return import ('./src/internal/cmds')
-  }, {
-    factory: 'setStateImpl'
-  });
-
-  registry.push('actionCompressor', 'vegaSetState', function () {
-    return import ('./src/internal/cmds')
-  }, {
-    factory: 'stateCompressor'
-  });
 
   // generator-phovea:end
 };
