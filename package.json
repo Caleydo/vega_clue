@@ -72,7 +72,6 @@
   },
   "dependencies": {
     "phovea_core": "github:phovea/phovea_core#thinkh/provenance_retrieval",
-    "phovea_ui": "^2.1.3",
     "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
     "vega-lib": "3.2.1",
     "vega-typings": "0.2.17",
