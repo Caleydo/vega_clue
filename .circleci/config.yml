@@ -33,8 +33,11 @@ jobs:
       #     name: Install npm dependencies from git repositories (always get latest commit)
       #     command: npm install
       - run:
+          name: List node_modules directory
+          command: ls -la ./node_modules
+      - run:
           name: Show installed npm dependencies
-          command: npm list --depth=2
+          command: npm list phovea_core
       - run:
           name: dist
           command: npm run dist
