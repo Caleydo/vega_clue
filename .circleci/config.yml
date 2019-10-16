@@ -13,27 +13,52 @@ jobs:
           command: |
             node -v
             npm -v
+      - run:
+          name: NPM Force Resolutions
+          command: npx npm-force-resolutions
       - restore_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "package.json" }}
+          key: deps1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: Install npm dependencies
           command: npm ci
-      - run:
-          name: Remove npm dependencies installed from git repositories (avoid caching of old commits)
-          command: |
-            (grep -l '._resolved.: .\(git[^:]*\|bitbucket\):' ./node_modules/*/package.json || true) | xargs -r dirname | xargs -r rm -rf
+      # - run:
+      #     name: Remove npm dependencies installed from git repositories (avoid caching of old commits)
+      #     command: |
+      #       (grep -l '._resolved.: .\(git[^:]*\|bitbucket\):' ./node_modules/*/package.json || true) | xargs -r dirname | xargs -r rm -rf
       - save_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "package.json" }}
+          key: deps1-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
           - ./node_modules
+      # - run:
+      #     name: Install npm dependencies from git repositories (always get latest commit)
+      #     command: npm install
       - run:
-          name: Install npm dependencies from git repositories (always get latest commit)
-          command: npm install
+          name: List node_modules directory
+          command: ls -la ./node_modules
       - run:
           name: Show installed npm dependencies
-          command: npm list --depth=2
+          command: npm list --depth=2 || true
+          # add `|| true` to ignore error exit code and continue with next build step
+          # the errors for `npm list` after `npm ci` are already known (see https://npm.community/t/8758/)
       - run:
           name: dist
           command: npm run dist
       - store_artifacts:
           path: dist
+
+workflows:
+  version: 2
+  build-branch:
+    jobs:
+      - build:
+          filters:
+            tags:
+              ignore: /^v.*/
+  build-tag:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
