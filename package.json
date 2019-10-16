@@ -77,13 +77,12 @@
     "vega-lib": "3.2.1",
     "vega-typings": "0.2.17",
     "vega-scale": "~2.1",
-    "vega-statistics": "~1.2",
+    "vega-statistics": "1.2.2",
     "vega-expression": "~2.4"
   },
   "resolutions": {
     "phovea_core": "github:phovea/phovea_core#thinkh/provenance_retrieval",
-    "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
-    "d3-array": "~1.2.4"
+    "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval"
   },
   "name": "vega_clue",
   "description": "Vega Gapminder with KnowledgePearls",
