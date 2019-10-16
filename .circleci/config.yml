@@ -33,6 +33,9 @@ jobs:
           name: install-npm-wee2
           command: npm install
       - run:
+          name: Show installed npm dependencies
+          command: npm list --depth=1
+      - run:
           name: dist
           command: npm run dist
       - store_artifacts:
