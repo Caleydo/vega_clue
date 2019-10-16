@@ -31,7 +31,7 @@ jobs:
           command: npm install
       - run:
           name: Show installed npm dependencies
-          command: npm list --depth=1
+          command: npm list --depth=2
       - run:
           name: dist
           command: npm run dist
