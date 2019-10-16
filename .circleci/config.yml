@@ -37,7 +37,9 @@ jobs:
           command: ls -la ./node_modules
       - run:
           name: Show installed npm dependencies
-          command: npm list phovea_core
+          command: |
+            npm list phovea_core
+            echo "phovea"
       - run:
           name: dist
           command: npm run dist
