@@ -27,6 +27,9 @@ jobs:
           paths:
           - ./node_modules
       - run:
+          name: NPM Force Resolutions
+          command: npx npm-force-resolutions
+      - run:
           name: Install npm dependencies from git repositories (always get latest commit)
           command: npm install
       - run:
