@@ -19,9 +19,6 @@ jobs:
           name: Install npm dependencies
           command: npm ci
       - run:
-          name: run `npm rebuild node-sass` # because there are no bindings available for the circleci image
-          command: npm rebuild node-sass
-      - run:
           name: Remove npm dependencies installed from git repositories (avoid caching of old commits)
           command: |
             (grep -l '._resolved.: .\(git[^:]*\|bitbucket\):' ./node_modules/*/package.json || true) | xargs -r dirname | xargs -r rm -rf
