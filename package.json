@@ -52,7 +52,7 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-webpack": "2.0.3",
     "mkdirp": "0.5.1",
-    "node-sass": "4.7.2",
+    "node-sass": "4.12.0",
     "null-loader": "0.1.1",
     "raw-loader": "0.5.1",
     "sass-loader": "6.0.7",
@@ -75,7 +75,10 @@
     "phovea_ui": "^2.1.3",
     "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
     "vega-lib": "3.2.1",
-    "vega-typings": "0.2.17"
+    "vega-typings": "0.2.17",
+    "vega-scale": "~2.1",
+    "vega-statistics": "~1.2",
+    "vega-expression": "~2.4"
   },
   "name": "vega_clue",
   "description": "Vega Gapminder with KnowledgePearls",
