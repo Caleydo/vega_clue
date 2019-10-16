@@ -21,17 +21,17 @@ jobs:
       - run:
           name: Install npm dependencies
           command: npm ci
-      - run:
-          name: Remove npm dependencies installed from git repositories (avoid caching of old commits)
-          command: |
-            (grep -l '._resolved.: .\(git[^:]*\|bitbucket\):' ./node_modules/*/package.json || true) | xargs -r dirname | xargs -r rm -rf
+      # - run:
+      #     name: Remove npm dependencies installed from git repositories (avoid caching of old commits)
+      #     command: |
+      #       (grep -l '._resolved.: .\(git[^:]*\|bitbucket\):' ./node_modules/*/package.json || true) | xargs -r dirname | xargs -r rm -rf
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
           - ./node_modules
-      - run:
-          name: Install npm dependencies from git repositories (always get latest commit)
-          command: npm install
+      # - run:
+      #     name: Install npm dependencies from git repositories (always get latest commit)
+      #     command: npm install
       - run:
           name: Show installed npm dependencies
           command: npm list --depth=2
