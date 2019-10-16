@@ -74,7 +74,8 @@
     "phovea_core": "github:phovea/phovea_core#thinkh/provenance_retrieval",
     "phovea_ui": "2.0.0",
     "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
-    "vega-lib": "3.2.1"
+    "vega-lib": "3.2.1",
+    "vega-typings": "0.2.17"
   },
   "name": "vega_clue",
   "description": "Vega Gapminder with KnowledgePearls",
