@@ -82,7 +82,8 @@
   },
   "resolutions": {
     "phovea_core": "github:phovea/phovea_core#thinkh/provenance_retrieval",
-    "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval"
+    "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
+    "uglify-js": "~3.6"
   },
   "name": "vega_clue",
   "description": "Vega Gapminder with KnowledgePearls",
