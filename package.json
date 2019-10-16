@@ -78,7 +78,8 @@
     "vega-typings": "0.2.17",
     "vega-scale": "~2.1",
     "vega-statistics": "1.2.2",
-    "vega-expression": "~2.4"
+    "vega-expression": "~2.4",
+    "vega-util": "1.7.0"
   },
   "resolutions": {
     "phovea_core": "github:phovea/phovea_core#thinkh/provenance_retrieval",
