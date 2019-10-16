@@ -37,7 +37,7 @@ jobs:
           command: ls -la ./node_modules
       - run:
           name: Show installed npm dependencies
-          command: npm list phovea_core || true
+          command: npm list --depth=2 || true
           # add `|| true` to ignore error exit code and continue with next build step
           # the errors for `npm list` after `npm ci` are already known (see https://npm.community/t/8758/)
       - run:
