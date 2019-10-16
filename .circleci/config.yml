@@ -13,9 +13,9 @@ jobs:
           command: |
             node -v
             npm -v
-      - run:
-          name: NPM Force Resolutions
-          command: npx npm-force-resolutions
+      # - run:
+      #     name: NPM Force Resolutions
+      #     command: npx npm-force-resolutions
       # - restore_cache:
       #     key: deps4-{{ .Branch }}-{{ checksum "package.json" }}
       - run:
