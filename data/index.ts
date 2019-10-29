@@ -62,6 +62,11 @@ import WorldMap from './world-map.vg.json';
 import ZoomableScatterPlot from './zoomable-scatter-plot.vg.json';
 import ZoomableWorldMap from './zoomable-world-map.vg.json';*/
 
+import VegaLiteBarChart from './vega-lite/bar-chart.vl.json';
+import VegaLiteStreamgraph from './vega-lite/streamgraph.vl.json';
+import VegaLiteSeattleWeather from './vega-lite/seattle-weather-condition.vl.json';
+
+import * as vegaLite from 'vega-lite';
 import {Spec} from 'vega-lib';
 import {tsv} from 'd3';
 
@@ -130,7 +135,7 @@ export interface IVegaSpecDataset {
 }
 
 enum ECategories {
-  /*BAR_CHARTS = 'Bar Charts',
+  BAR_CHARTS = 'Bar Charts',
   LINE_CHARTS = 'Line & Area Charts',
   CIRCULAR_CHARTS = 'Circular Charts',
   SCATTER_PLOTS = 'Dot & Scatter Plots',
@@ -139,9 +144,15 @@ enum ECategories {
   TREE_DIAGRAMS = 'Tree Diagrams',
   NETWORK_DIAGRAMS = 'Network Diagrams',
   OTHER_CHARTS = 'Other Chart Types',
-  CUSTOM_VISUAL_DESIGNS = 'Custom Visual Designs',*/
+  CUSTOM_VISUAL_DESIGNS = 'Custom Visual Designs',
   INTERACTION_TECHNIQUES = 'Interaction Techniques'
 }
+
+const vegaLiteSpecs: IVegaSpecDataset[] = [
+  { title: 'Vega-Lite Bar Chart', spec: vegaLite.compile(VegaLiteBarChart).spec, category: ECategories.BAR_CHARTS },
+  { title: 'Vega-Lite Streamgraph', spec: vegaLite.compile(VegaLiteStreamgraph).spec, category: ECategories.OTHER_CHARTS },
+  { title: 'Vega-Lite Seattle Weather', spec: vegaLite.compile(VegaLiteSeattleWeather).spec, category: ECategories.OTHER_CHARTS }
+];
 
 const vegaSpecs: IVegaSpecDataset[] = [
   /*{title: 'Airport Connections', spec: AirportConnections, category: ECategories.NETWORK_DIAGRAMS},
@@ -221,6 +232,6 @@ export function loadDatasets(): Promise<IVegaSpecDataset[]> {
       }
     })
     .then((gapminder: IVegaSpecDataset) => {
-      return [gapminder, ...vegaSpecs];
+      return [...vegaLiteSpecs, gapminder, ...vegaSpecs];
     });
 }
