@@ -95,7 +95,7 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
     this.header.insertCustomRightMenu(provenanceMenu.node);
 
     const modeSelector = body.querySelector('header');
-    //modeSelector.classList.add('collapsed');
+    modeSelector.classList.add('collapsed');
     modeSelector.classList.add('clue-modeselector');
 
     const main = <HTMLElement>document.body.querySelector('main');
@@ -121,7 +121,7 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
 
     const provVis = loadProvenanceGraphVis(graph, body.querySelector('div.asides'), {
       thumbnails: false,
-      provVisCollapsed: false,
+      provVisCollapsed: true,
       hideCLUEButtonsOnCollapse: true
     });
     const storyVis = loadStoryVis(graph, <HTMLElement>body.querySelector('div.asides'), main, {
@@ -136,7 +136,8 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
 
       createProvRetrievalPanel(graph, body.querySelector('div.asides'), {
         app,
-        captureNonPersistedStates: false
+        captureNonPersistedStates: false,
+        startCollapsed: true
       });
 
       if (!graph.isEmpty) {
