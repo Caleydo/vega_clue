@@ -4,12 +4,10 @@ jobs:
     working_directory: ~/phovea
     docker:
       - image: circleci/node:12-browsers
-    tags:
-      - /v\d+.\d+.\d+.*/
     steps:
       - checkout
       - run:
-          name: Show node and npm version
+          name: Show Node.js and npm version
           command: |
             node -v
             npm -v
@@ -38,16 +36,23 @@ jobs:
       - run:
           name: Show installed npm dependencies
           command: npm list --depth=2 || true
-          # add `|| true` to ignore error exit code and continue with next build step
-          # the errors for `npm list` after `npm ci` are already known (see https://npm.community/t/8758/)
       - run:
-          name: dist
+          name: Build
           command: npm run dist
       - store_artifacts:
           path: dist
-
 workflows:
   version: 2
+#  build-nightly:
+#    triggers:
+#      - schedule:
+#          cron: "15 1 * * 1-5" # "At 01:15 on every day-of-week from Monday through Friday.”, see: https://crontab.guru/#15_1_*_*_1-5
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#    jobs:
+#      - build
   build-branch:
     jobs:
       - build:
