@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "predist": "npm run build && npm run docs",
+    "predist": "npm run build",
     "predocker": "npm run build",
     "docker": "docker build -t vega_clue -f deploy/Dockerfile .",
     "compile": "tsc",
