@@ -11,25 +11,31 @@ jobs:
           command: |
             node -v
             npm -v
+      - run:
+          name: NPM Force Resolutions
+          command: npx npm-force-resolutions
       - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "package.json" }}
+          key: deps1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: Install npm dependencies
-          command: npm install
-      - run:
-          name: Remove npm dependencies installed from git repositories (avoid caching of old commits)
-          command: |
-            (grep -l '._resolved.: .\(git[^:]*\|bitbucket\):' ./node_modules/*/package.json || true) | xargs -r dirname | xargs -r rm -rf
+          command: npm ci
+      # - run:
+      #     name: Remove npm dependencies installed from git repositories (avoid caching of old commits)
+      #     command: |
+      #       (grep -l '._resolved.: .\(git[^:]*\|bitbucket\):' ./node_modules/*/package.json || true) | xargs -r dirname | xargs -r rm -rf
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "package.json" }}
+          key: deps1-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
           - ./node_modules
+      # - run:
+      #     name: Install npm dependencies from git repositories (always get latest commit)
+      #     command: npm install
       - run:
-          name: Install npm dependencies from git repositories (always get latest commit)
-          command: npm install
+          name: List node_modules directory
+          command: ls -la ./node_modules
       - run:
           name: Show installed npm dependencies
-          command: npm list --depth=1 || true
+          command: npm list --depth=2 || true
       - run:
           name: Build
           command: npm run dist
