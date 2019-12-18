@@ -2,7 +2,7 @@
   "generator-phovea": {
     "type": "app",
     "name": "vega_clue",
-    "app": "Vega CLUE",
+    "app": "vega_clue",
     "author": "The Caleydo Team",
     "githubAccount": "caleydo",
     "clientOnly": false,
@@ -28,6 +28,12 @@
     ],
     "ignores": [],
     "extensions": [],
-    "today": "Tue, 13 Mar 2018 10:20:09 GMT"
+    "today": "Tue, 13 Mar 2018 10:20:09 GMT",
+    "promptValues": {
+      "authorName": "The Caleydo Team",
+      "authorEmail": "contact@caleydo.org",
+      "authorUrl": "https://caleydo.org",
+      "githubAccount": "caleydo"
+    }
   }
 }
