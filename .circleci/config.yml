@@ -28,7 +28,6 @@ jobs:
           name: Install npm dependencies from git repositories (always get latest commit)
           command: |
             npm install
-            npm install github:phovea/phovea_clue#thinkh/provenance_retrieval
       - run:
           name: Show installed npm dependencies
           command: npm list --depth=1 || true
