@@ -1,12 +1,29 @@
 {
   "private": true,
+  "name": "vega_clue",
+  "description": "Vega Gapminder with KnowledgePearls",
+  "homepage": "https://caleydo.org",
+  "version": "1.0.0-SNAPSHOT",
+  "author": {
+    "name": "The Caleydo Team",
+    "email": "contact@caleydo.org",
+    "url": "https://caleydo.org"
+  },
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/Caleydo/vega_clue/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Caleydo/vega_clue.git"
+  },
   "scripts": {
-    "predist": "npm run build",
+    "predist": "npm run build && npm run docs",
     "predocker": "npm run build",
     "docker": "docker build -t vega_clue -f deploy/Dockerfile .",
     "compile": "tsc",
-    "lint": "tslint -c tslint.json -p .",
-    "docs": "typedoc --options typedoc.json src/**/.ts",
+    "lint": "tslint -c tslint.json -p . 'src/**/*.ts?(x)' 'tests/**/*.ts?(x)'",
+    "docs": "typedoc --options typedoc.json src/",
     "prebuild": "node -e \"process.exit(process.env.PHOVEA_SKIP_TESTS === undefined?1:0)\" || npm run test",
     "pretest": "npm run compile",
     "test": "test ! -d tests || karma start",
@@ -72,34 +89,12 @@
     "ts-loader": "4.0.1"
   },
   "dependencies": {
-    "phovea_core": "github:phovea/phovea_core#thinkh/provenance_retrieval",
     "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
+    "vega-expression": "~2.4",
     "vega-lib": "3.2.1",
-    "vega-typings": "0.2.17",
     "vega-scale": "~2.1",
     "vega-statistics": "1.2.2",
-    "vega-expression": "~2.4",
+    "vega-typings": "0.2.17",
     "vega-util": "1.7.0"
-  },
-  "resolutions": {
-    "phovea_core": "github:phovea/phovea_core#thinkh/provenance_retrieval",
-    "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval"
-  },
-  "name": "vega_clue",
-  "description": "Vega Gapminder with KnowledgePearls",
-  "homepage": "https://caleydo.org",
-  "version": "1.0.0-SNAPSHOT",
-  "author": {
-    "name": "The Caleydo Team",
-    "email": "contact@caleydo.org",
-    "url": "https://caleydo.org"
-  },
-  "license": "BSD-3-Clause",
-  "bugs": {
-    "url": "https://github.com/Caleydo/vega_clue/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Caleydo/vega_clue.git"
   }
 }
