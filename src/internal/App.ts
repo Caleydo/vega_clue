@@ -148,7 +148,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
     $optgroups.exit().remove();
 
-    $($select.node())
+    (<any>$($select.node()))
       .select2({
         theme: 'bootstrap'
       })
