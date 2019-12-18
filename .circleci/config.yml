@@ -26,7 +26,7 @@ jobs:
           - ./node_modules
       - run:
           name: Install npm dependencies from git repositories (always get latest commit)
-          command: npm install
+          command: npm install --force
       - run:
           name: Show installed npm dependencies
           command: npm list --depth=1 || true
