@@ -11,11 +11,11 @@
   },
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/Caleydo/vega_clue/issues"
+    "url": "https://github.com/caleydo/vega_clue/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Caleydo/vega_clue.git"
+    "url": "git@github.com:Caleydo/vega_clue.git"
   },
   "scripts": {
     "predist": "npm run build && npm run docs",
