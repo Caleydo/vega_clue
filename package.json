@@ -18,17 +18,18 @@
     "url": "git@github.com:Caleydo/vega_clue.git"
   },
   "scripts": {
-    "predist": "npm run build && npm run docs",
-    "predocker": "npm run build",
-    "docker": "docker build -t vega_clue -f deploy/Dockerfile .",
+    "clean": "rimraf build dist && npm run clean:compile",
+    "clean:compile": "rimraf src/**/*.map src/**/*.js src/**/*.d.ts tests/**/*.js tests/**/*.map tests/**/*.d.ts demo/**/*.js demo/**/*.map demo/**/*.d.ts",
     "compile": "tsc",
     "lint": "tslint -c tslint.json -p . 'src/**/*.ts?(x)' 'tests/**/*.ts?(x)'",
-    "docs": "typedoc --options typedoc.json src/",
+    "docs": "typedoc --options typedoc.json src/**.ts",
     "prebuild": "node -e \"process.exit(process.env.PHOVEA_SKIP_TESTS === undefined?1:0)\" || npm run test",
-    "pretest": "npm run compile",
-    "test": "test ! -d tests || karma start",
+    "pretest": "npm run clean && npm run compile",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "posttest": "npm run lint",
-    "test:watch": "karma start --autoWatch=true --singleRun=false",
+    "predocker": "npm run build",
+    "docker": "docker build -t vega_clue -f deploy/Dockerfile .",
     "build:dev": "webpack",
     "build": "webpack --env prod",
     "start": "webpack-dev-server --inline",
@@ -37,6 +38,7 @@
     "release:major": "npm version major && npm publish && git push --follow-tags",
     "release:minor": "npm version minor && npm publish && git push --follow-tags",
     "release:patch": "npm version patch && npm publish && git push --follow-tags",
+    "predist": "npm run build && npm run docs",
     "dist": "mkdirp dist && cd build && tar cvzf ../dist/vega_clue.tar.gz *"
   },
   "files": [
