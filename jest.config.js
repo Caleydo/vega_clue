@@ -18,7 +18,8 @@ const pluginsToTransform = [
  */
 module.exports = {
   transform: {
-    "^.+\\.tsx?$": "ts-jest"
+    "^.+\\.tsx?$": "ts-jest",
+    "\\.xml$": "jest-raw-loader"
   },
   testRegex: 'src/.*\\.test\\.js$',
   testURL: "http://localhost/",
