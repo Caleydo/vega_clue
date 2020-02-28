@@ -15,6 +15,7 @@ import * as cmode from 'phovea_clue/src/mode';
 import {showProveanceGraphNotFoundDialog} from './dialogs';
 import {create as createProvRetrievalPanel} from 'phovea_clue/src/provenance_retrieval/ProvRetrievalPanel';
 import {mixin} from 'phovea_core/src';
+import {initI18n} from 'phovea_core/src/i18n';
 
 
 export interface IView<T> {
@@ -57,8 +58,9 @@ export class AppWrapper<T extends IView<T> & IVisStateApp> extends ACLUEWrapper 
     mixin(this.options, options);
   }
 
-  public init() {
-    this.build(document.body, {replaceBody: true});
+  public async init() {
+    await initI18n(); // Initialize i18n and then load application
+    await this.build(document.body, {replaceBody: true});
   }
 
   protected buildImpl(body: HTMLElement) {
