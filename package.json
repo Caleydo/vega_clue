@@ -89,11 +89,11 @@
   },
   "dependencies": {
     "phovea_clue": "github:phovea/phovea_clue#stoiber/provenance_retrieval+typescript_3.8+update_dependencies_38",
-    "vega-expression": "~2.6.3",
-    "vega-lib": "4.4.0",
-    "vega-scale": "~6.0.0",
-    "vega-statistics": "1.7.2",
-    "vega-typings": "0.12.4",
-    "vega-util": "1.12.2"
+    "vega-expression": "~2.4",
+    "vega-lib": "3.2.1",
+    "vega-scale": "~2.1",
+    "vega-statistics": "1.2.2",
+    "vega-typings": "0.2.17",
+    "vega-util": "1.7.0"
   }
 }
