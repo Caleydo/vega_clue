@@ -68,7 +68,7 @@
     "karma-junit-reporter": "2.0.0",
     "karma-sourcemap-loader": "0.3.7",
     "karma-webpack": "2.0.3",
-    "npm-force-resolutions": "0.0.2",
+    "npm-force-resolutions": "0.0.3",
     "node-sass": "^4.13.1",
     "null-loader": "0.1.1",
     "raw-loader": "0.5.1",
