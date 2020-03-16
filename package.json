@@ -37,7 +37,7 @@
     "release:major": "npm version major && npm publish && git push --follow-tags",
     "release:minor": "npm version minor && npm publish && git push --follow-tags",
     "release:patch": "npm version patch && npm publish && git push --follow-tags",
-    "dist": "mkdirp dist && cd build && tar cvzf ../dist/vega_clue.tar.gz *"
+    "dist": "mkdir dist && cd build && tar cvzf ../dist/vega_clue.tar.gz *"
   },
   "files": [
     "src",
@@ -68,16 +68,14 @@
     "karma-junit-reporter": "2.0.0",
     "karma-sourcemap-loader": "0.3.7",
     "karma-webpack": "2.0.3",
-    "mkdirp": "0.5.1",
-    "npm-force-resolutions": "0.0.2",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.1",
     "null-loader": "0.1.1",
     "raw-loader": "0.5.1",
     "sass-loader": "6.0.7",
     "style-loader": "0.16.1",
     "tslib": "~1.11.0",
     "tslint": "5.9.1",
-    "typedoc": "~0.16.9",
+    "typedoc": "~0.16.10",
     "typescript": "~3.8.2",
     "url-loader": "0.5.8",
     "webpack": "2.3.3",
@@ -89,7 +87,7 @@
     "ts-loader": "4.0.1"
   },
   "dependencies": {
-    "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval+typescript_3.8",
+    "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
     "vega-expression": "~2.4",
     "vega-lib": "3.2.1",
     "vega-scale": "~2.1",
