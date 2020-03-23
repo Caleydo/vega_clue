@@ -15,9 +15,7 @@ jobs:
           key: deps1-{{ .Branch }}-{{ checksum "package.json" }}
       - run:
           name: Install npm dependencies
-          command: |
-            npm install
-            npm install github:phovea/phovea_clue#thinkh/provenance_retrieval
+          command: npm install
       - run:
           name: Remove npm dependencies installed from git repositories (avoid caching of old commits)
           command: |
@@ -28,8 +26,7 @@ jobs:
           - ./node_modules
       - run:
           name: Install npm dependencies from git repositories (always get latest commit)
-          command: |
-            npm install
+          command: npm install
       - run:
           name: Show installed npm dependencies
           command: npm list --depth=1 || true
