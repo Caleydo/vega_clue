@@ -7,7 +7,7 @@ import * as d3 from 'd3';
 import * as vega from 'vega-lib';
 import {Spec, View, BindRange} from 'vega-lib';
 import {ISetStateMetadata, setState} from './cmds';
-import {ClueData, IClueSignal, IAsyncData, IAsyncSignal} from './spec';
+import {ClueData, IClueSignal, IAsyncData, IAsyncSignal} from './VegaSpec';
 import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
 import {
   createPropertyValue, IProperty,
