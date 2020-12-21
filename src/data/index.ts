@@ -103,7 +103,7 @@ const gapminderData = Promise.all([
 
   country.forEach((d, i) => {
     gdp[i].forEach((e, j) => {
-      const countryName = worldCountryNames.filter((f) => f[1][1] == country[i][0][1])[0];
+      const countryName = worldCountryNames.filter((f) => f[1][1] === country[i][0][1])[0];
       const mapId = (countryName) ? +countryName[0][1] : 0;
       const r = {
         country: country[i][0][1],
@@ -125,9 +125,9 @@ const gapminderData = Promise.all([
 });
 
 export interface IVegaSpecDataset {
-  title: string,
-  spec: Spec,
-  category: ECategories
+  title: string;
+  spec: Spec;
+  category: ECategories;
 }
 
 enum ECategories {
@@ -219,7 +219,7 @@ export function loadDatasets(): Promise<IVegaSpecDataset[]> {
         title: 'Gapminder',
         spec: Gapminder,
         category: ECategories.INTERACTION_TECHNIQUES
-      }
+      };
     })
     .then((gapminder: IVegaSpecDataset) => {
       return [gapminder, ...vegaSpecs];
