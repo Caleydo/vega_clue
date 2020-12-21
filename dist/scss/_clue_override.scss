@@ -1,10 +1,10 @@
 // instead: import the CLUE styles separately
-@import "~phovea_clue/src/styles/base";
-@import "~phovea_clue/src/styles/annotation";
-@import "~phovea_clue/src/styles/provvis";
-@import "~phovea_clue/src/styles/storyvis";
-@import "~phovea_clue/src/styles/prov-retrieval";
-@import "~phovea_clue/src/styles/select2";
+@import "~phovea_clue/dist/scss/base";
+@import "~phovea_clue/dist/scss/annotation";
+@import "~phovea_clue/dist/scss/provvis";
+@import "~phovea_clue/dist/scss/storyvis";
+@import "~phovea_clue/dist/scss/prov-retrieval";
+@import "~phovea_clue/dist/scss/select2";
 
 /**
  * All rules in this file override or directly extend the original clue styles
@@ -129,4 +129,3 @@ div.stories {
 .select2-container--bootstrap .select2-results__option--highlighted[aria-selected] {
   background-color: #777;
 }
-

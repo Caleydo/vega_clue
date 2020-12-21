@@ -1,0 +1,33 @@
+@import '~phovea_ui/dist/scss/fonts/yantramanav';
+
+body, html {
+  font-family: Yantramanav, 'Helvetica Neue', Helvetica, sans-serif;
+  font-weight: 400;
+}
+
+th,
+label,
+strong,
+b,
+.label {
+  font-weight: 500;
+}
+
+main[data-anchor="main"] {
+  display: flex;
+  overflow: auto;
+
+  .app {
+    flex: 1;
+    margin: 10px;
+  }
+
+  .dataset-selector {
+    padding-bottom: 10px;
+    border-bottom: 1px solid $core_border;
+
+    #url {
+      width: 400px;
+    }
+  }
+}

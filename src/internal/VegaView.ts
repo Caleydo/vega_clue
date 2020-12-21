@@ -1,6 +1,6 @@
-import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
+import {ObjectRefUtils, ProvenanceGraph} from 'phovea_core';
 import {IView} from '../AppWrapper';
-import {cat, IObjectRef, ref} from 'phovea_core/src/provenance';
+import {IObjectRef} from 'phovea_core';
 // best solution to import Handlebars (@see https://github.com/wycats/handlebars.js/issues/1174)
 import * as handlebars from 'handlebars/dist/handlebars';
 import * as d3 from 'd3';
@@ -8,12 +8,12 @@ import * as vega from 'vega-lib';
 import {Spec, View, BindRange} from 'vega-lib';
 import {ISetStateMetadata, setState} from './cmds';
 import {ClueData, IClueSignal, IAsyncData, IAsyncSignal} from './VegaSpec';
-import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
+import {IVisStateApp} from 'phovea_clue';
 import {
   createPropertyValue, IProperty,
   IPropertyValue, numericalProperty, Property, PropertyType, TAG_VALUE_SEPARATOR
-} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
-import {setProperty} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
+} from 'phovea_core';
+import {setProperty} from 'phovea_core';
 
 
 interface IVegaViewOptions {
@@ -103,7 +103,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
   }
 
   constructor(parent: HTMLElement, private readonly graph: ProvenanceGraph, private spec: Spec) {
-    this.ref = this.graph.findOrAddObject(ref(this, spec.title ? String(spec.title) : 'View', cat.visual));
+    this.ref = this.graph.findOrAddObject(ObjectRefUtils.objectRef(this, spec.title ? String(spec.title) : 'View', ObjectRefUtils.category.visual));
 
     this.$node = d3.select(parent)
       .append('div')

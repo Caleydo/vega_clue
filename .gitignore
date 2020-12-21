@@ -1,12 +1,13 @@
 /.tscache
 /.idea
-/build/
-/dist/
+/lib/
 node_modules/
 /src/**/*.js
 /tests/**/*.js
-*.map
+/src/**/*.map
+/tests/**/*.map
 *.css
 *.log
+/.awcache
 /.cache-loader
 package-lock.json

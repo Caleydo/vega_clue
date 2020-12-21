@@ -65,14 +65,15 @@ import ZoomableWorldMap from './zoomable-world-map.vg.json';*/
 import {Spec} from 'vega-lib';
 import {tsv} from 'd3';
 
-import * as csvGdp from 'file-loader!./gapminder/gdp.txt';
-import * as csvChildMortality from 'file-loader!./gapminder/childmortality.txt';
-import * as csvContinent from 'file-loader!./gapminder/continent.txt';
-import * as csvFertility from 'file-loader!./gapminder/fertility.txt';
-import * as csvLifetimeExpectancy from 'file-loader!./gapminder/lifeexpectancy.txt';
-import * as csvReligions from 'file-loader!./gapminder/main_religions.txt';
-import * as csvPopulation from 'file-loader!./gapminder/totalPop_interpolated.txt';
-import * as tsvWorldCountryNames from 'file-loader!./gapminder/world-country-names.tsv';
+// Prefixing with ! will disable all configured normal loaders
+import csvGdp from '!file-loader!./gapminder/gdp.txt';
+import csvChildMortality from '!file-loader!./gapminder/childmortality.txt';
+import csvContinent from '!file-loader!./gapminder/continent.txt';
+import csvFertility from '!file-loader!./gapminder/fertility.txt';
+import csvLifetimeExpectancy from '!file-loader!./gapminder/lifeexpectancy.txt';
+import csvReligions from '!file-loader!./gapminder/main_religions.txt';
+import csvPopulation from '!file-loader!./gapminder/totalPop_interpolated.txt';
+import tsvWorldCountryNames from '!file-loader!./gapminder/world-country-names.tsv';
 import Gapminder from './gapminder/gapminder.vg.json';
 
 
@@ -214,7 +215,7 @@ export function loadDatasets(): Promise<IVegaSpecDataset[]> {
     .then((data) => {
       Gapminder.data.filter((d) => d.name === 'gapminder')[0].values = data;
 
-      return {
+      return <IVegaSpecDataset>{
         title: 'Gapminder',
         spec: Gapminder,
         category: ECategories.INTERACTION_TECHNIQUES

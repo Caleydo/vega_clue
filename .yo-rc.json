@@ -7,7 +7,12 @@
     "githubAccount": "caleydo",
     "clientOnly": false,
     "entries": {
-      "app": "./src/index.ts"
+      "app": {
+        "js": "dist/initialize.js",
+        "template": "dist/index.template.ejs",
+        "html": "index.html",
+        "chunkName": "app"
+      }
     },
     "libraries": [
       "d3"
@@ -17,8 +22,17 @@
       "phovea_ui",
       "phovea_clue"
     ],
+    "vendors": {
+      "others": "phovea.*|tdp_.*|tdp-.*|datavisyn.*",
+      "phovea": "phovea.*",
+      "tdp": "tdp_.|tdp-.*",
+      "dv": "datavisyn.*"
+    },
+    "filesToLoad": {
+      "file-loader": "404|robots"
+    },
     "libraryAliases": {
-      "d3": "d3/d3"
+      "d3": "d3/d3.js"
     },
     "libraryExternals": [
       "d3",
