@@ -96,7 +96,7 @@ const gapminderData = Promise.all([
     const data = [];
     country.forEach((d, i) => {
         gdp[i].forEach((e, j) => {
-            const countryName = worldCountryNames.filter((f) => f[1][1] == country[i][0][1])[0];
+            const countryName = worldCountryNames.filter((f) => f[1][1] === country[i][0][1])[0];
             const mapId = (countryName) ? +countryName[0][1] : 0;
             const r = {
                 country: country[i][0][1],

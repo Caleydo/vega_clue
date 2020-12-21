@@ -21,5 +21,4 @@ export default function (registry) {
     });
     // generator-phovea:end
 }
-;
 //# sourceMappingURL=phovea.js.map
