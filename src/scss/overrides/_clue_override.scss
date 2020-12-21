@@ -1,11 +1,3 @@
-// instead: import the CLUE styles separately
-@import "~phovea_clue/dist/scss/base";
-@import "~phovea_clue/dist/scss/annotation";
-@import "~phovea_clue/dist/scss/provvis";
-@import "~phovea_clue/dist/scss/storyvis";
-@import "~phovea_clue/dist/scss/prov-retrieval";
-@import "~phovea_clue/dist/scss/select2";
-
 /**
  * All rules in this file override or directly extend the original clue styles
  */

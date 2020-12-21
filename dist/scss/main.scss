@@ -1,7 +1,7 @@
-@import "./vars";
+@import "./abstracts/variables";
 
-@import "./clue_override";
+@import "./overrides/clue_override";
 
-@import "./base";
+@import "./base/base";
 
-@import "./vega_view";
+@import "./components/vega_view";
