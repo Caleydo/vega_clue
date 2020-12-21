@@ -13,16 +13,16 @@ export default function (registry: IRegistry) {
   /// #endif
   // generator-phovea:begin
   registry.push('actionFunction', 'vegaSetState', function () {
-    return import ('./internal/cmds')
+    return import ('./internal/cmds');
   }, {
     factory: 'setStateImpl'
   });
 
   registry.push('actionCompressor', 'vegaSetState', function () {
-    return import ('./internal/cmds')
+    return import ('./internal/cmds');
   }, {
     factory: 'stateCompressor'
   });
 
   // generator-phovea:end
-};
+}
