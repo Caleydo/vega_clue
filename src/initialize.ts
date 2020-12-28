@@ -7,8 +7,6 @@ import 'vega_clue/dist/robots.txt';
 import {AppWrapper} from './AppWrapper';
 import {APP_NAME} from './language';
 import App from './internal/App';
-// import styles as last
-import 'vega_clue/dist/scss/main.scss';
 
 const app = new AppWrapper<App>({
   prefix: 'vega',

@@ -3,4 +3,3 @@
  */
 import 'vega_clue/dist/templates/404.html';
 import 'vega_clue/dist/robots.txt';
-import 'vega_clue/dist/scss/main.scss';
