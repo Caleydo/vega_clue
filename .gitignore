@@ -1,11 +1,14 @@
 /.tscache
 /.idea
-/build/
-/dist/
+/lib/
+/dist/tsBuildInfoFile
 node_modules/
 /src/**/*.js
 /tests/**/*.js
-*.map
+/src/**/*.map
+/tests/**/*.map
 *.css
 *.log
+/.awcache
 /.cache-loader
+package-lock.json

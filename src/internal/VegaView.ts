@@ -1,19 +1,19 @@
-import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
+import {ObjectRefUtils, ProvenanceGraph} from 'phovea_core';
 import {IView} from '../AppWrapper';
-import {cat, IObjectRef, ref} from 'phovea_core/src/provenance';
+import {IObjectRef} from 'phovea_core';
 // best solution to import Handlebars (@see https://github.com/wycats/handlebars.js/issues/1174)
 import * as handlebars from 'handlebars/dist/handlebars';
 import * as d3 from 'd3';
 import * as vega from 'vega-lib';
 import {Spec, View, BindRange} from 'vega-lib';
 import {ISetStateMetadata, setState} from './cmds';
-import {ClueData, ClueSignal, IAsyncData, IAsyncSignal} from './spec';
-import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
+import {ClueData, IClueSignal, IAsyncData, IAsyncSignal} from './VegaSpec';
+import {IVisStateApp} from 'phovea_clue';
 import {
   createPropertyValue, IProperty,
   IPropertyValue, numericalProperty, Property, PropertyType, TAG_VALUE_SEPARATOR
-} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
-import {setProperty} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
+} from 'phovea_core';
+import {setProperty} from 'phovea_core';
 
 
 interface IVegaViewOptions {
@@ -62,7 +62,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
 
     // cast to <any>, because `getState()` is missing in 'vega-typings'
     const vegaView = (<any>this.$node.datum());
-    const signalSpec: ClueSignal = <ClueSignal>this.spec.signals.find((d) => d.name === name)!;
+    const signalSpec: IClueSignal = <IClueSignal>this.spec.signals.find((d) => d.name === name)!;
     const context = {name, value};
 
     let promise = Promise.resolve(true);
@@ -103,7 +103,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
   }
 
   constructor(parent: HTMLElement, private readonly graph: ProvenanceGraph, private spec: Spec) {
-    this.ref = this.graph.findOrAddObject(ref(this, spec.title ? String(spec.title) : 'View', cat.visual));
+    this.ref = this.graph.findOrAddObject(ObjectRefUtils.objectRef(this, spec.title ? String(spec.title) : 'View', ObjectRefUtils.category.visual));
 
     this.$node = d3.select(parent)
       .append('div')
@@ -238,8 +238,8 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
     })
     .filter((s) => s); // filter undefined values
 
-    const fill: ClueSignal[] = <ClueSignal[]>[...this.spec.signals, ...this.spec.data]
-      .filter((s: ClueSignal) => s.search && s.search.fill);
+    const fill: IClueSignal[] = <IClueSignal[]>[...this.spec.signals, ...this.spec.data]
+      .filter((s: IClueSignal) => s.search && s.search.fill);
     const fillSource = this.createFillPropertiesFromDataSource(fill, vegaView);
     const fillRange = this.createFillPropertiesFromRanges(fill, vegaView);
 
@@ -279,8 +279,8 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    */
   private getGroupsFromVegaSpec(spec: Spec, vegaView: View): {group: string, type: string}[]  {
     return [...spec.signals, ...spec.data]
-      .filter((s: ClueSignal) => s.search && s.search.group)
-      .map((s: ClueSignal) => {
+      .filter((s: IClueSignal) => s.search && s.search.group)
+      .map((s: IClueSignal) => {
         return {
           group: this.resolveSignalReference(s.search.group, vegaView),
           type: s.search.type
@@ -292,14 +292,14 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    * Creates a property with multiple property values of a data source from the Vega view.
    * This function works only for `search.type = 'set'` and needs a valid data reference.
    *
-   * @param {ClueSignal} fill
+   * @param {IClueSignal} fill
    * @param {View} vegaView
    * @returns {IProperty[]}
    */
-  private createFillPropertiesFromDataSource(fill: ClueSignal[], vegaView: View): IProperty[] {
+  private createFillPropertiesFromDataSource(fill: IClueSignal[], vegaView: View): IProperty[] {
     return fill
-      .filter((s: ClueSignal) => s.search.type === 'set' && s.search.fill.source)
-      .map((s: ClueSignal) => {
+      .filter((s: IClueSignal) => s.search.type === 'set' && s.search.fill.source)
+      .map((s: IClueSignal) => {
         const group = this.resolveSignalReference(s.search.group, vegaView);
         const rawTitle = (s.search.title) ? s.search.title : `{{name}}_{{index}}`;
         const template = handlebars.compile(rawTitle);
@@ -311,7 +311,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
               // Special case! Use title also id to make items distinguishable, because name is equal for all items
               id: `${s.name} ${TAG_VALUE_SEPARATOR} ${title}`,
               text: title,
-              group: group
+              group
             };
           });
         return setProperty(group, values); // property of type SET
@@ -322,14 +322,14 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    * Creates a property with multiple property values from a range between min/max and a certain step width.
    * This function works only for `search.type = 'number'` and needs defined a valid range.
    *
-   * @param {ClueSignal} fill
+   * @param {IClueSignal} fill
    * @param vegaView
    * @returns {IProperty[]}
    */
-  private createFillPropertiesFromRanges(fill: ClueSignal[], vegaView: View): IProperty[] {
+  private createFillPropertiesFromRanges(fill: IClueSignal[], vegaView: View): IProperty[] {
     return fill
-      .filter((s: ClueSignal) => s.search.type === 'number' && s.search.fill.range)
-      .map((s: ClueSignal) => {
+      .filter((s: IClueSignal) => s.search.type === 'number' && s.search.fill.range)
+      .map((s: IClueSignal) => {
         const range = s.search.fill.range;
         const group = this.resolveSignalReference(s.search.group, vegaView);
         const rawTitle = (s.search.title) ? s.search.title : `{{value}}`;
@@ -342,7 +342,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
               // Special case! Use title also id to make items distinguishable, because name is equal for all items
               id: `${s.name} ${TAG_VALUE_SEPARATOR} ${title}`,
               text: title,
-              group: group,
+              group,
               payload: {
                 numVal: title,
                 propText: group
@@ -369,15 +369,15 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
 
     /**
      * Resolve signal references in the input data and set the values from the current Vega view
-     * @param {ClueSignal | ClueData} input
+     * @param {IClueSignal | ClueData} input
      * @param {View} vegaView
      * @param {'signal'|'data'} source
      */
     const prepareInput = (input: any, vegaView: View, source: 'signal' | 'data') => {
       return input
-        .filter((d: ClueSignal | ClueData) => d.search)
+        .filter((d: IClueSignal | ClueData) => d.search)
         .map((d) => Object.assign({}, d)) // shallow copy object
-        .map((d: ClueSignal | ClueData) => {
+        .map((d: IClueSignal | ClueData) => {
           if(d.search && d.search.group) {
             d.search.group = this.resolveSignalReference(d.search.group, vegaView);
           }
@@ -404,10 +404,10 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
    *
    * At the moment this function only creates numerical and category.
    *
-   * @param {ClueSignal} signal
+   * @param {IClueSignal} signal
    * @returns {IPropertyValue}
    */
-  private signalToPropertyValue(signal: ClueSignal): IPropertyValue {
+  private signalToPropertyValue(signal: IClueSignal): IPropertyValue {
     const context = {name: signal.name, value: signal.value};
     let rawTitle, template;
 
@@ -499,8 +499,8 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
   private addSignalListener(vegaView: View, spec: Spec) {
     if (spec.signals) {
       spec.signals
-        .filter((signal: ClueSignal) => signal.track)
-        .forEach((signal: ClueSignal) => {
+        .filter((signal: IClueSignal) => signal.track)
+        .forEach((signal: IClueSignal) => {
           // check for range input
           if(signal.bind && (<BindRange>signal.bind).input === 'range') {
             this.addRangeDOMListener(signal.name, (<BindRange>signal.bind).input);
@@ -519,7 +519,7 @@ export class VegaView implements IView<VegaView>, IVisStateApp {
   private removeSignalListener(vegaView: View, spec: Spec) {
     if (spec.signals) {
       spec.signals
-        .filter((signal: ClueSignal) => signal.track)
+        .filter((signal: IClueSignal) => signal.track)
         .forEach((signal) => {
           vegaView.removeSignalListener(signal.name, this.signalHandler);
         });

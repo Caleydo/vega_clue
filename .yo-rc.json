@@ -2,12 +2,17 @@
   "generator-phovea": {
     "type": "app",
     "name": "vega_clue",
-    "app": "Vega CLUE",
+    "app": "vega_clue",
     "author": "The Caleydo Team",
     "githubAccount": "caleydo",
     "clientOnly": false,
     "entries": {
-      "app": "./src/index.ts"
+      "app": {
+        "js": "dist/initialize.js",
+        "template": "dist/index.template.ejs",
+        "html": "index.html",
+        "chunkName": "app"
+      }
     },
     "libraries": [
       "d3"
@@ -17,8 +22,17 @@
       "phovea_ui",
       "phovea_clue"
     ],
+    "vendors": {
+      "others": "phovea.*|tdp_.*|tdp-.*|datavisyn.*",
+      "phovea": "phovea.*",
+      "tdp": "tdp_.|tdp-.*",
+      "dv": "datavisyn.*"
+    },
+    "filesToLoad": {
+      "file-loader": "404|robots"
+    },
     "libraryAliases": {
-      "d3": "d3/d3"
+      "d3": "d3/d3.js"
     },
     "libraryExternals": [
       "d3",
@@ -28,6 +42,12 @@
     ],
     "ignores": [],
     "extensions": [],
-    "today": "Tue, 13 Mar 2018 10:20:09 GMT"
+    "today": "Tue, 13 Mar 2018 10:20:09 GMT",
+    "promptValues": {
+      "authorName": "The Caleydo Team",
+      "authorEmail": "contact@caleydo.org",
+      "authorUrl": "https://caleydo.org",
+      "githubAccount": "caleydo"
+    }
   }
 }

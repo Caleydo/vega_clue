@@ -4,14 +4,14 @@
 
 import * as d3 from 'd3';
 import * as $ from 'jquery';
-import {IVisStateApp} from 'phovea_clue/src/provenance_retrieval/IVisState';
-import {cat, IObjectRef} from 'phovea_core/src/provenance';
-import {EventHandler} from 'phovea_core/src/event';
-import ProvenanceGraph from 'phovea_core/src/provenance/ProvenanceGraph';
-import CLUEGraphManager from 'phovea_clue/src/CLUEGraphManager';
-import {IProperty, IPropertyValue} from 'phovea_core/src/provenance/retrieval/VisStateProperty';
+import {IVisStateApp} from 'phovea_clue';
+import {IObjectRef, ObjectRefUtils} from 'phovea_core';
+import {EventHandler} from 'phovea_core';
+import {ProvenanceGraph} from 'phovea_core';
+import {CLUEGraphManager} from 'phovea_clue';
+import {IProperty, IPropertyValue} from 'phovea_core';
 import {IView} from '../AppWrapper';
-import {IVegaSpecDataset, loadDatasets} from '../../data';
+import {IVegaSpecDataset, loadDatasets} from '../data';
 import {VegaView} from './VegaView';
 import {Spec} from 'vega-lib';
 import * as vega from 'vega-lib';
@@ -44,7 +44,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
     // add OrdinoApp app as (first) object to provenance graph
     // need old name for compatibility
-    this.ref = this.graph.findOrAddObject(this, 'App', cat.visual);
+    this.ref = this.graph.findOrAddObject(this, 'App', ObjectRefUtils.category.visual);
 
     this.$node = d3.select(parent)
       .append('div')
@@ -131,13 +131,13 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
     const $select = this.$node.select('.dataset-selector select');
 
-    const nested_data = d3.nest()
+    const nestedData = d3.nest()
       .key((d: IVegaSpecDataset) => d.category)
       .entries(datasets);
 
     const $optgroups = $select
       .selectAll('optgroup')
-      .data(nested_data);
+      .data(nestedData);
 
     const $optgroupEnter = $optgroups.enter().append('optgroup')
       .attr('label', (d) => d.key);
@@ -148,7 +148,7 @@ export default class App extends EventHandler implements IView<App>, IVisStateAp
 
     $optgroups.exit().remove();
 
-    $($select.node())
+    (<any>$($select.node()))
       .select2({
         theme: 'bootstrap'
       })
