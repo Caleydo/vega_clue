@@ -3,7 +3,7 @@
   "name": "vega_clue",
   "description": "Vega Gapminder with KnowledgePearls",
   "homepage": "https://phovea.caleydo.org",
-  "version": "1.0.0",
+  "version": "1.0.1-SNAPSHOT",
   "author": {
     "name": "The Caleydo Team",
     "email": "contact@caleydo.org",
