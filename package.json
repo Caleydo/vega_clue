@@ -1,9 +1,9 @@
 {
   "private": true,
   "name": "vega_clue",
-  "description": "Vega Gapminder with KnowledgePearls",
+  "description": "DEPRECATED: Vega Gapminder with KnowledgePearls",
   "homepage": "https://phovea.caleydo.org",
-  "version": "1.0.1-SNAPSHOT",
+  "version": "2.0.0",
   "author": {
     "name": "The Caleydo Team",
     "email": "contact@caleydo.org",
@@ -65,7 +65,7 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
+    "phovea_clue": "^9.0.0",
     "vega-expression": "~2.4",
     "vega-lib": "3.2.1",
     "vega-scale": "~2.1",
