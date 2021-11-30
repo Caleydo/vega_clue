@@ -65,7 +65,7 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "phovea_clue": "^9.0.0",
+    "phovea_clue": "github:phovea/phovea_clue#thinkh/provenance_retrieval",
     "vega-expression": "~2.4",
     "vega-lib": "3.2.1",
     "vega-scale": "~2.1",
