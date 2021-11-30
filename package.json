@@ -1,9 +1,9 @@
 {
   "private": true,
   "name": "vega_clue",
-  "description": "Vega Gapminder with KnowledgePearls",
+  "description": "DEPRECATED: Vega Gapminder with KnowledgePearls",
   "homepage": "https://phovea.caleydo.org",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": {
     "name": "The Caleydo Team",
     "email": "contact@caleydo.org",
